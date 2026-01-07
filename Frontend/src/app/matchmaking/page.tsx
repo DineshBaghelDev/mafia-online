@@ -6,17 +6,16 @@ import Link from 'next/link';
 
 export default function MatchmakingPage() {
     const router = useRouter();
-    const { socket, username, setUsername } = useGame();
-    // Default to "Player" if no username set, in a real app we'd force the username modal first
-    const [localUsername, setLocalUsername] = useState(username || "Guest"); 
-    const [searching, setSearching] = useState(true); // Start searching immediately for this demo view
-    const [playersFound, setPlayersFound] = useState(1); // Self
+    const { socket, username } = useGame();
+    const [searching, setSearching] = useState(true);
+    const [playersFound, setPlayersFound] = useState(1);
     const MAX_PLAYERS = 8;
 
     useEffect(() => {
+        // Redirect to username if not set
         if (!username) {
-             // In a real flow, redirect to username entry or show modal. 
-             // For now, we simulate the matchmaking screen as requested even if username is empty.
+            router.push('/username?next=/matchmaking');
+            return;
         }
         
         let interval: NodeJS.Timeout;
@@ -48,6 +47,14 @@ export default function MatchmakingPage() {
 
     return (
         <div className="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white overflow-x-hidden min-h-screen flex flex-col font-display">
+            {/* Back Button */}
+            <button
+                onClick={handleCancel}
+                className="fixed top-8 left-8 z-20 flex items-center gap-2 text-gray-500 hover:text-white transition-colors"
+            >
+                <span className="material-symbols-outlined">arrow_back</span>
+                <span className="font-medium">Back</span>
+            </button>
             {/* Top Navigation */}
             <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-black/10 dark:border-b-white/5 px-6 py-4 md:px-10 z-20 bg-background-light/50 dark:bg-background-dark/50 backdrop-blur-sm sticky top-0">
                 <Link href="/" className="flex items-center gap-3 text-white cursor-pointer hover:opacity-80 transition-opacity">
@@ -141,36 +148,4 @@ export default function MatchmakingPage() {
             </footer>
         </div>
     );
-}                    
-                    <div className="flex flex-col items-center gap-8 py-4">
-                        <div className="flex justify-center gap-4 flex-wrap">
-                            {Array.from({ length: MAX_PLAYERS }).map((_, i) => (
-                                <div 
-                                    key={i}
-                                    className={`w-6 h-6 md:w-8 md:h-8 rounded-full transition-all duration-500 ${
-                                        i < playersFound 
-                                            ? 'bg-primary shadow-[0_0_15px_rgba(230,57,70,0.6)] animate-pulse' 
-                                            : 'bg-white/5 border-2 border-dashed border-primary/30'
-                                    }`}
-                                />
-                            ))}
-                        </div>
-
-                        <div className="flex flex-col items-center gap-1">
-                            <p className="text-white/60 text-xs font-bold uppercase tracking-widest">Lobby Status</p>
-                            <p className="text-3xl font-mono font-bold text-white tracking-widest">
-                                <span className="text-primary">{playersFound}</span> / {MAX_PLAYERS}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="pt-4">
-                        <Button variant="ghost" onClick={handleCancel} className="px-12 text-muted hover:text-white hover:bg-white/5 decoration-slice">
-                            CANCEL SEARCH
-                        </Button>
-                    </div>
-                </div>
-            )}
-        </div>
-    )
 }

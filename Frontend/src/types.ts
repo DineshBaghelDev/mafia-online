@@ -1,5 +1,5 @@
-export type Role = 'mafia' | 'detective' | 'doctor' | 'villager';
-export type Phase = 'lobby' | 'night' | 'day' | 'voting' | 'ended';
+export type Role = 'mafia' | 'sheriff' | 'doctor' | 'villager'; // Changed detective to sheriff to match designs
+export type Phase = 'lobby' | 'role_reveal' | 'day' | 'voting' | 'night' | 'game_end';
 
 export interface Player {
     id: string; // socketId or userId
@@ -8,6 +8,8 @@ export interface Player {
     role?: Role;
     isAlive: boolean;
     connected: boolean;
+    avatar?: string; // Add avatar support
+    isReady?: boolean; // Add ready state support
 }
 
 export interface RoomState {
@@ -17,15 +19,16 @@ export interface RoomState {
     players: Record<string, Player>;
     settings: {
         maxPlayers: number;
-        discussionTime: number; // seconds
-        votingTime: number; // seconds
+        dayDuration: number;
+        nightDuration: number;
+        votingDuration: number;
     };
-    timerEnd?: number; 
-    votes: Record<string, string>; 
-    actions: {
+    timer: number; // Current remaining seconds
+    votes?: Record<string, string>; 
+    actions?: {
         mafiaKill?: string;
         doctorSave?: string;
-        detectiveInspect?: string;
+        sheriffInspect?: string; // Check sheriff
     };
     winner?: 'mafia' | 'villagers';
 }

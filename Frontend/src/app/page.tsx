@@ -11,7 +11,7 @@ export default function LandingPage() {
   const handleJoin = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (joinCode.length >= 4) {
-      router.push(`/lobby/${joinCode.toUpperCase()}`);
+      router.push(`/username?next=/lobby/${joinCode.toUpperCase()}`);
     }
   };
 
@@ -49,7 +49,7 @@ export default function LandingPage() {
       <div className="w-full max-w-[420px] flex flex-col gap-4 z-20">
         {/* Primary Action: Play Public */}
         <button
-          onClick={() => router.push('/matchmaking')}
+          onClick={() => router.push('/username?next=/matchmaking')}
           className="group relative w-full h-14 md:h-16 bg-primary hover:bg-[#ff4d5a] text-white rounded-xl font-bold text-lg tracking-wide transition-all duration-300 transform hover:-translate-y-1 shadow-[0_4px_0_rgb(160,20,30)] hover:shadow-[0_6px_0_rgb(160,20,30),0_0_20px_rgba(230,55,67,0.5)] active:translate-y-[2px] active:shadow-[0_2px_0_rgb(160,20,30)] flex items-center justify-between px-6 overflow-hidden font-display"
         >
           <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[100%] group-hover:animate-shimmer"></div>
@@ -62,7 +62,7 @@ export default function LandingPage() {
 
         {/* Secondary Action: Create Private */}
         <button
-          onClick={() => router.push('/create')}
+          onClick={() => router.push('/username?next=/create')}
           className="group w-full h-14 md:h-16 bg-[#1a1d24] hover:bg-[#252932] border border-white/5 hover:border-white/10 text-gray-200 rounded-xl font-bold text-lg tracking-wide transition-all duration-200 flex items-center justify-between px-6 hover:shadow-lg font-display"
         >
           <span className="flex items-center gap-3">

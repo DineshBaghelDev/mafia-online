@@ -1,14 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGame } from '@/context/GameContext';
 
 export default function CreateGamePage() {
     const router = useRouter();
     const { socket, username, setUsername } = useGame();
-    // Default to "Host" if empty for now
-    const [localUsername, setLocalUsername] = useState(username || "Host"); 
+
+    useEffect(() => {
+        // Redirect to username if not set
+        if (!username) {
+            router.push('/username?next=/create');
+        }
+    }, [username, router]);
+
+    if (!username) {
+        return null;
+    } 
 
     const [mafiaCount, setMafiaCount] = useState(2);
     const [doctorCount, setDoctorCount] = useState(1);
@@ -19,10 +28,9 @@ export default function CreateGamePage() {
 
     const handleCreate = () => {
         if (!socket) return;
-        setUsername(localUsername);
         // Emitting create room event with settings
         socket.emit('room:create', { 
-            username: localUsername,
+            username,
             settings: {
                 mafiaCount,
                 doctorCount,
@@ -49,6 +57,15 @@ export default function CreateGamePage() {
                 <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
             </div>
 
+            {/* Back Button */}
+            <button
+                onClick={() => router.push('/')}
+                className="fixed top-8 left-8 z-20 flex items-center gap-2 text-gray-500 hover:text-white transition-colors"
+            >
+                <span className="material-symbols-outlined">arrow_back</span>
+                <span className="font-medium">Back</span>
+            </button>
+
             <main className="relative w-full max-w-[720px] bg-[#12161D] border border-white/5 shadow-2xl rounded-2xl overflow-hidden flex flex-col z-10 h-full max-h-[90vh]">
                 <header className="px-8 py-6 border-b border-white/5 bg-[#161B22] flex items-center justify-between flex-shrink-0">
                     <div>
@@ -61,22 +78,6 @@ export default function CreateGamePage() {
                 </header>
 
                 <div className="p-8 space-y-10 overflow-y-auto custom-scrollbar">
-                    {/* Username Input for Host (Extra) */}
-                    {!username && (
-                         <div className="space-y-4">
-                            <h2 className="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-2 ml-1">Your Identity</h2>
-                            <div className="bg-[#161B22] p-4 rounded-2xl border border-white/5">
-                                <label className="block text-sm font-bold text-white mb-2">Host Name</label>
-                                <input 
-                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-primary outline-none transition-colors"
-                                    value={localUsername}
-                                    onChange={(e) => setLocalUsername(e.target.value)}
-                                    maxLength={15}
-                                />
-                            </div>
-                         </div>
-                    )}
-
                     <section>
                         <h2 className="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-5 ml-1">Composition</h2>
                         <div className="space-y-4">
