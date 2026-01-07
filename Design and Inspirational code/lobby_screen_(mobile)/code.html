@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Game Lobby</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e63743",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211112",
+                        "mafia-black": "#0E1117",
+                        "mafia-surface": "#161b22",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="bg-mafia-black text-white font-display min-h-screen flex items-center justify-center overflow-hidden">
+<!-- Mobile Container Simulation -->
+<div class="relative w-full max-w-[480px] h-screen sm:h-[850px] sm:max-h-screen bg-mafia-black flex flex-col sm:border sm:border-white/10 sm:rounded-2xl sm:shadow-2xl overflow-hidden">
+<!-- Header / Nav -->
+<header class="flex items-center justify-between px-6 py-4 bg-mafia-black/80 backdrop-blur-md sticky top-0 z-20 border-b border-white/5">
+<button class="text-white/60 hover:text-white transition-colors">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-wider uppercase text-white/90">Lobby</h1>
+<button class="text-white/60 hover:text-white transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto pb-32">
+<!-- Room Code Section -->
+<div class="px-6 pt-6 pb-2">
+<div class="bg-gradient-to-br from-mafia-surface to-white/5 rounded-xl p-6 text-center border border-white/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-4xl">vpn_key</span>
+</div>
+<p class="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">Room Code</p>
+<div class="flex items-center justify-center gap-3">
+<h2 class="text-4xl font-bold tracking-widest text-white">X7K2P</h2>
+<button class="flex items-center justify-center size-10 rounded-full bg-white/10 hover:bg-primary hover:text-white transition-all text-white/70">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Players Section -->
+<div class="px-6 mt-6">
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-white text-base font-bold leading-tight">Players (8/10)</h3>
+<span class="text-xs font-medium text-white/40 bg-white/5 px-2 py-1 rounded">Private</span>
+</div>
+<div class="flex flex-col gap-2">
+<!-- Player 1 (Host/You) -->
+<div class="flex items-center gap-3 bg-mafia-surface hover:bg-white/5 transition-colors p-3 rounded-xl border border-white/5">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="Avatar of player with sunglasses" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB24WmL7VbjC8XC-GHYrmum6pvr6dcgH0Sff416IXJa-exYOgkwKbC5_9bkWIGYMk-3x9ruhlVHnhzze8gXj4j70_gRZIUgh21YFPmrslyvQ9P-cGpDUvXpKkq6sx_EVnp4ARJYo54sqX-w5l-aze1GDrSNhmH1CpOGqb3cghWhlFtScAOBD4VLwJaepxSFURBK3QeB2-axWVzYu31pq2-BKNHxLNHId4DS9fInicsvsAOtiYGvuiiImaP5QA3PkK_K2hhkUjkvODkN");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full size-3.5 border-2 border-mafia-surface"></div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2">
+<p class="text-white text-sm font-semibold truncate">DetectiveDoe (You)</p>
+<span class="bg-primary/20 text-primary text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide border border-primary/20">Host</span>
+</div>
+<p class="text-xs text-green-400 font-medium">Ready</p>
+</div>
+</div>
+<!-- Player 2 -->
+<div class="flex items-center gap-3 bg-mafia-surface hover:bg-white/5 transition-colors p-3 rounded-xl border border-white/5">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="Avatar of player with blue hair" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBBJjuSdlalLZMjuA8cdhQHkYBdbp9z0G3wMimA0KGfpOuaBVdQVKzKUB7Dny22WeWhEkaRKwUE2neM3avbsUqlv7tcRuLcgMBh-MdL_miujzuMrNIzrEhJIs-JLbnTavZzM6yhCQJg6rc3KsTn6WddAj9HCigU_JQITqxmQx69SdmioQQz0eRNcjccHDgUycwYBVHycwRZbKuPvkJaatuQoF68TFxN2g1tmBsUDzLzGjBTP7NeyR-_mIJoZQHUlWAUshyWE2Odi9gH");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full size-3.5 border-2 border-mafia-surface"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-semibold truncate">SusImposter</p>
+<p class="text-xs text-green-400 font-medium">Ready</p>
+</div>
+<button class="size-8 flex items-center justify-center text-white/30 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+<!-- Player 3 -->
+<div class="flex items-center gap-3 bg-mafia-surface hover:bg-white/5 transition-colors p-3 rounded-xl border border-white/5">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="Avatar of player with hat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCBbDhi1VWNAL9dV2NXE3Jpd3GdA19w5grO7BlRxa-cY3KOWr-Hc3rQV1dVqIYDqNvx8_HxK-WdJygG4TL6K0rqzmyVUVQPd-98bkyqIgvrhTb1tbVKbAG27yqRfWindcjzlnkxMGnJLuOxFbga-_rzeUS3o-5AnaUnXfTQ54vxRRxyrpTvLWUo7hQz7Y7815_h3-peBhuKQKQvY8jZT_tccMFfi5fVjgTQcu5aBTucLDAuCkegCfErqlPaX5rcxnjsoSxMWGNcLHxF");'></div>
+<div class="absolute -bottom-1 -right-1 bg-gray-500 rounded-full size-3.5 border-2 border-mafia-surface"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-semibold truncate">PizzaLover99</p>
+<p class="text-xs text-white/40 font-medium">Not Ready</p>
+</div>
+<button class="size-8 flex items-center justify-center text-white/30 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+<!-- Player 4 -->
+<div class="flex items-center gap-3 bg-mafia-surface hover:bg-white/5 transition-colors p-3 rounded-xl border border-white/5">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="Avatar of player with glasses" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuALmFWPa6dy0httQNESyx4XIDf9xL--o6_PgDdqkWzf-EQCmNvJqSDsaULWbx25dgY7yEHdtapXmLaVWkQVDlmmjRm59ijy_mX4drKw1V0RJkbXWhINOcTc2Pr4TpRirbTmUotQ6fNmVaKJXQd0ek4kdrtoSDOgD1OoivqYigMYeWRZXnCzBcOumMrV-WEXEt40qGSZPz_StpmuSElq4p4PZSykugdfFGyisCNU2BftRA7r0rRl_cVGT5KZq1DVDXFPYqFbOUK1iO80");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full size-3.5 border-2 border-mafia-surface"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-semibold truncate">ShadowHunter</p>
+<p class="text-xs text-green-400 font-medium">Ready</p>
+</div>
+<button class="size-8 flex items-center justify-center text-white/30 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+<!-- Player 5 -->
+<div class="flex items-center gap-3 bg-mafia-surface hover:bg-white/5 transition-colors p-3 rounded-xl border border-white/5">
+<div class="relative shrink-0">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border border-white/10" data-alt="Avatar of player" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCqzg2f_MUzyIu2_yoEXj9QkxBiGnkN0FYZX3K5HFi7OumO0jJZ_4mAYl9zYWmfWfbnhw7Xl_XWgq6iDHOzTCY_S4_rFIDLrnKv8CxfhoSQlaB3LH93zJ-vLHFg8w30Ag-yKacA2exq1STkqnIM4g6EMFO6igRQHpnWF4LIjqesgtJlqO4lv28Lwov6Lb72mferv64afnVzvVFdhU9u5HF-qHcav3BBMggYfkM7rb5m87VVpqbER3CgQpbHWLfya1crCnGgJXTiZ1as");'></div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 rounded-full size-3.5 border-2 border-mafia-surface"></div>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-white text-sm font-semibold truncate">NightOwl</p>
+<p class="text-xs text-green-400 font-medium">Ready</p>
+</div>
+<button class="size-8 flex items-center justify-center text-white/30 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+<span class="material-symbols-outlined text-[20px]">block</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Settings Section -->
+<div class="px-6 mt-8">
+<div class="flex items-center justify-between mb-3 px-1">
+<h3 class="text-white text-base font-bold leading-tight">Game Settings</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-wide hover:underline">Edit</button>
+</div>
+<div class="bg-mafia-surface rounded-xl border border-white/5 overflow-hidden">
+<div class="flex items-center justify-between p-4 border-b border-white/5">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-white/5 rounded-lg text-white/70">
+<span class="material-symbols-outlined text-[20px]">forum</span>
+</div>
+<span class="text-sm font-medium text-white/80">Discussion Time</span>
+</div>
+<span class="text-sm font-bold text-white">90s</span>
+</div>
+<div class="flex items-center justify-between p-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-white/5 rounded-lg text-white/70">
+<span class="material-symbols-outlined text-[20px]">how_to_vote</span>
+</div>
+<span class="text-sm font-medium text-white/80">Voting Time</span>
+</div>
+<span class="text-sm font-bold text-white">30s</span>
+</div>
+</div>
+<p class="mt-4 text-center text-xs text-white/30">Waiting for players to ready up...</p>
+</div>
+</div>
+<!-- Bottom Action Area -->
+<div class="absolute bottom-0 left-0 right-0 bg-mafia-black border-t border-white/5 p-5 backdrop-blur-lg bg-opacity-95 z-30 flex flex-col gap-3">
+<button class="w-full h-12 flex items-center justify-center rounded-xl bg-primary hover:bg-red-600 active:scale-[0.98] text-white text-sm font-bold uppercase tracking-widest shadow-lg shadow-primary/20 transition-all">
+                Start Game
+            </button>
+<div class="flex gap-3">
+<button class="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-white/5 hover:bg-white/10 active:scale-[0.98] text-white text-sm font-bold uppercase tracking-widest border border-white/5 transition-all">
+<span class="material-symbols-outlined text-[20px] text-green-400">check_circle</span>
+                    Ready
+                </button>
+<button aria-label="Leave Room" class="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/5 transition-all">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</button>
+</div>
+</div>
+</div>
+</body></html>

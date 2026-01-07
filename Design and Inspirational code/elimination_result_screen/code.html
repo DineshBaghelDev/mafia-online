@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Elimination Result Screen</title>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e63743",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#211112",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom utilities for the mood */
+        .glass-panel {
+            background: rgba(33, 17, 18, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-white overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Main Container -->
+<div class="layout-container relative flex flex-1 flex-col items-center justify-center w-full min-h-screen p-4">
+<!-- Ambient Background Effects (No Image Modification, CSS Gradients only) -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+<!-- Dark Overlay for moodiness -->
+<div class="absolute inset-0 bg-[#0E1117]/90 mix-blend-multiply"></div>
+<!-- Subtle red accent glow from bottom -->
+<div class="absolute -bottom-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 rounded-full blur-[120px]"></div>
+<!-- Top spotlight -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-white/5 rounded-full blur-[100px] opacity-20"></div>
+</div>
+<!-- Content Wrapper -->
+<div class="relative z-10 flex flex-col items-center w-full max-w-[520px] gap-8">
+<!-- Page Heading Section -->
+<div class="text-center space-y-2">
+<div class="flex items-center justify-center gap-2 text-primary/80 mb-1">
+<span class="material-symbols-outlined text-[20px]">how_to_vote</span>
+<span class="text-sm font-bold tracking-widest uppercase">Voting Results</span>
+</div>
+<h1 class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight drop-shadow-lg">
+                    The Town Has Spoken
+                </h1>
+</div>
+<!-- Result Card -->
+<div class="w-full glass-panel border border-white/10 rounded-xl p-8 flex flex-col items-center shadow-2xl relative overflow-hidden group">
+<!-- Background pattern within card -->
+<div class="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+<!-- Avatar Section -->
+<div class="relative mb-6">
+<div class="relative z-10 w-36 h-36 rounded-full p-1 bg-gradient-to-b from-primary/50 to-transparent shadow-[0_0_40px_rgba(230,55,67,0.4)]">
+<div class="w-full h-full rounded-full bg-black/50 overflow-hidden relative">
+<!-- Placeholder Avatar -->
+<div class="w-full h-full bg-cover bg-center grayscale contrast-125" data-alt="Portrait of a young man looking serious against a light background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB78ugIHm90TpiXFbmxtmDPLalIuODwrNTygTVsPsA13uBSEROUsN8RYT1Oc-N6Hbkm9G0e3fxJFGFeGz6B4yIKw-vT-JsQfq7tBQhDA-1GGTS-TTIyWaT5doy-PDvX9UH8w4IYoDcrnfdnP2wKZx7KQsBDd8idPg1dLGvc6qFZ3FS04hRDnhBX-RAS_KDxo4EEkLqO7Qr70mFYss38TRI0fCmai0LWb5JdiWaEjdZqNwa2CBE6QMtpON-M0lMaxceYWRFBwsO5aamC');">
+</div>
+</div>
+</div>
+<!-- Eliminated Indicator Icon -->
+<div class="absolute bottom-1 right-1 z-20 bg-primary text-white rounded-full p-2.5 shadow-lg border-4 border-[#211112] flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl font-bold">close</span>
+</div>
+</div>
+<!-- Elimination Announcement -->
+<div class="flex flex-col items-center gap-3 w-full border-b border-white/10 pb-6 mb-6">
+<h2 class="text-3xl font-bold text-white text-center">Player B</h2>
+<div class="px-4 py-1.5 rounded-full bg-primary/20 border border-primary/30 text-red-200 text-xs font-bold tracking-[0.15em] uppercase flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                        Eliminated
+                    </div>
+</div>
+<!-- Role Reveal Section -->
+<div class="w-full flex flex-col items-center gap-2 opacity-100 transition-opacity duration-1000">
+<p class="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-1">True Identity</p>
+<div class="bg-white/5 w-full rounded-lg p-5 flex flex-col items-center gap-2 border border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#94c7a9] text-3xl">person</span>
+<span class="text-2xl font-black text-white tracking-wide">VILLAGER</span>
+</div>
+<p class="text-[#94c7a9] text-sm font-medium tracking-wide">(Innocent)</p>
+</div>
+</div>
+</div>
+<!-- Action Button Area -->
+<div class="w-full flex justify-center pt-2">
+<!-- Spacing component used as padding -->
+<div class="w-full" style="height: 16px;"></div>
+<button class="group relative flex w-full max-w-[320px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 bg-primary text-white text-base font-bold leading-normal tracking-[0.05em] shadow-lg shadow-primary/20 transition-all hover:bg-red-600 hover:shadow-primary/40 active:scale-[0.98]">
+<!-- Hover Effect Background -->
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+<span class="flex items-center gap-3 z-10">
+                        CONTINUE
+                        <span class="material-symbols-outlined text-xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</span>
+</button>
+</div>
+<!-- Hint / Flavor Text -->
+<p class="text-white/30 text-sm font-medium text-center">
+                Waiting for remaining players...
+            </p>
+</div>
+</div>
+</body></html>

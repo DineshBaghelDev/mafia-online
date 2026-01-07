@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Game Lobby</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e63743",
+              "background-light": "#f8f6f6",
+              "background-dark": "#0E1117",
+              "surface-dark": "#161b22",
+              "surface-border": "#30363d",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "2xl": "2rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Utilities */
+        .material-symbols-outlined { 
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; 
+        }
+        body {
+            background-color: #0E1117; /* Enforcing the deep dark background */
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col antialiased selection:bg-primary/30">
+<!-- Top Navigation -->
+<nav class="w-full px-6 py-4 border-b border-black/5 dark:border-white/5 bg-white/50 dark:bg-[#0E1117]/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-gradient-to-br from-primary to-red-900 rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">local_police</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight hidden sm:block">Mafia <span class="text-primary">Online</span></h1>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex flex-col items-end mr-2">
+<span class="text-sm font-bold">Detective Doe</span>
+<span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Host</span>
+</div>
+<div class="size-10 rounded-full bg-cover bg-center ring-2 ring-primary/20" data-alt="User avatar showing a minimalist vector character" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCwNyAGJ5KnRwlDfTBo5J7K5r-w6DOblzzokpwKxExvTIrCTMlvoQzokFNlxuA7B4Lph4r-b3MgIUVcDR0p2ih7FkgHxPUUrNnEXnuSQ1x0SdI8ju5vVqtD4-g8GRTGiuskVvIYAIXHOaqfkv_xhOIjo7sc0fboSF4CviOShFAjdahm4PqS-igmT5FoFN0dQ5UW53v4m97iqE8BXc6Db6-yJUS8Dn0RlDzaYJK9uWIzgfd7yFbhr6wmdJT_HNDyIPWNPPHdmav3YUXr');"></div>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-start py-8 px-4 md:px-6 w-full max-w-7xl mx-auto">
+<!-- Room Code Section -->
+<div class="w-full max-w-3xl mb-10 text-center animate-fade-in-up">
+<p class="text-gray-500 uppercase tracking-[0.2em] text-xs font-bold mb-3">Lobby Access</p>
+<div class="relative group inline-block">
+<div class="absolute -inset-1 bg-gradient-to-r from-primary to-red-900 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+<div class="relative bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border rounded-xl px-8 py-4 flex items-center gap-6 shadow-2xl">
+<h2 class="text-4xl md:text-5xl font-extrabold tracking-widest font-mono text-gray-900 dark:text-white">X7K2P</h2>
+<div class="h-10 w-px bg-gray-200 dark:bg-gray-700"></div>
+<button class="flex items-center justify-center size-10 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 hover:text-primary transition-colors" title="Copy Room Code">
+<span class="material-symbols-outlined text-2xl">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Two Column Layout: Players & Settings -->
+<div class="w-full grid lg:grid-cols-12 gap-6 md:gap-8">
+<!-- Left Column: Player List (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-4">
+<div class="flex items-center justify-between px-1">
+<h3 class="text-xl font-bold flex items-center gap-2">
+                        Players 
+                        <span class="px-2.5 py-0.5 rounded-full bg-gray-200 dark:bg-white/10 text-sm text-gray-700 dark:text-gray-300 font-mono">8/10</span>
+</h3>
+<div class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
+<span class="size-2 rounded-full bg-green-500 inline-block animate-pulse"></span>
+                        Waiting for players
+                    </div>
+</div>
+<div class="grid md:grid-cols-2 gap-3">
+<!-- Player 1 (Host, Self) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-green-500/50 p-3 rounded-xl shadow-sm transition-all hover:shadow-md">
+<div class="absolute right-3 top-3">
+<span class="flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 border-2 border-primary/20" data-alt="Abstract geometric avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAghfw1o6_AkUo5HgIV8nifAIct3Q0ilVo6QlIjP4BbDft5j1gTEdEbJODZHP8Y-s9PlTsi-eXA2rT89i2FoWbGa12bY8o54IEQlocwKjPdQKMMN3k1FE6YqvijY5KAjKaVW-6wPjB9nufNFMXvAnWBX0aXJuft1CPgZLcqb7dAkoNbRgzmoZUHOBCcsbYDcZwsw0lXxCbNPsgcif6wZXjES0s2P0dt7FVWJU_DvITdDrqhiotRrXRFOz-uQGbnE0Y5lMBKMsiSJR-E');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-900 dark:text-white">Detective Doe</p>
+<span class="bg-primary/10 text-primary text-[10px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider flex items-center gap-1 border border-primary/20">
+<span class="material-symbols-outlined text-[12px]">stars</span> Host
+                                </span>
+</div>
+<p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">Ready</p>
+</div>
+</div>
+<!-- Player 2 (Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-green-500/50 p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 border-2 border-gray-700/20" data-alt="Abstract colorful avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBLhoVmEThTSja3KqkFp5lWQuxM7x8K7IN_c62OZZpCNuzJlxChwnbqQgwd6FAevIQAgLo8zNn48oEYq42vdTxF06rhRvYnNhYylrCUYBatriImCRTRzmF89ykNoYeqIq5ob5RgZtLBR7NaItxc7SiJSPBArzVHH1FpEobH2i9eopnD6yvnO0sC4QbrNbCrWA61tJSG4-PAufRnrzwW-K71I5yd3AU9RH5kOQg5PsP_-IqZ_k3w9x0dDhFDsaIjUFyAlrZD-Oa5-1p6');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-900 dark:text-white">SilentShadow</p>
+</div>
+<p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 3 (Not Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-gray-600"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 grayscale opacity-80" data-alt="Dark moody avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA6c5MoFRq5dYzuEJaNE6Xl2Qt31lGZCfYcxS5WB5ZxM_FjvPXx23VO-pnOEhSgAPAjuVsnEr_A7cGHUSHiO-BX4lXPlwcPi13is-tSKAUdYvzZcIdjupoORArmqJAFJp52SYa1r7NZL1x9pxd8nt5uqh4dqtco5HUJVA11CCW0joFgp25w0UpRdn-cTxff8213pluUpidS3dEZLt7aWkNjljkcEuUQm1XWE_7Rfh4hEvHmw5d6fECRDI8gmb91H7NP4JZqht4PNE0r');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-700 dark:text-gray-300">VigilanteX</p>
+</div>
+<p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Not Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 4 (Not Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-gray-600"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 grayscale opacity-80" data-alt="Purple abstract avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDyFcUTap9nsvxEuLEO_mH9TNd6N5eGfJxUtM3Fnz8AfuCNkULA8GaKz4nDu7IaZEIf6spnufcD0pSCsJFQbsYEABj8DjbNhaFCdGo6QCd-UafVgQAkDIyvlE1F3yse0hoxTz2-ZyXSoluo0mflnXJvBx75U95AZ69AlltIkVl1iWraQBbmpuIyDIf2z8uDOsSmPaQKmUppY71MY7Q9oMfmK9Pn4anVUMG5ugF2Ga4GyKgPOi3oGmhbqiF0yJgkRchoc5-j5BHb0QJr');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-700 dark:text-gray-300">Mafioso99</p>
+</div>
+<p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Not Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 5 (Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-green-500/50 p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 border-2 border-gray-700/20" data-alt="Green avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCeFzIOOm0pLYkPanATADOA5D2RGXJ8QV6Fm9VASWJp1JAgrQKfxYwgbmIOQqTqkT2oHPtGsJZy_noQza8XowiUgVly6Ml2O2dbH4aWxVMPNbdLccRcz5LA8UBOFodmfR_5iArUcrtSchHjmXu6LEKxp_wbITDHOI0hZ9Mt8U89BnxH2T1wAXEHxANq53AV6nJHtvzk-e0vd48AJfdfcRGmFB4uddb0WKqEbSHdeIOPtMB2vId9OM9-WOpV6a9QvAquhNF_1_PqWZct');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-900 dark:text-white">GreenGhost</p>
+</div>
+<p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 6 (Not Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-gray-600"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 grayscale opacity-80" data-alt="Yellow abstract avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAY33YIgOVd02ks_4pKaHdXdK2m7MK4LumPsX4QG-bVlXo6xffadtGoMFD3bFHCO-t0SJzBTUrxtx2YO0jx6hSRPYE_jDAsF-sQMbuQOZ8h4sciHdxZTqRSzCBMcrlAYWmPt-vcUCKosULpBZxebSj4NtZus2DOZbDm-oT7aAzyayhtXvWl2oh8yq9XeM5UvoeZFUtj2W1613TgEP3ICtTqgkw8z2UcBknf6mIWbI8w-YWMO4CTo1fCM3EZVFfc6qDlw4YnHv_xbfJI');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-700 dark:text-gray-300">SusSpecter</p>
+</div>
+<p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Not Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 7 (Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-green-500/50 p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 border-2 border-gray-700/20" data-alt="Red avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCujdtlxrJ1RLKjnChKDWdtvPNXuXwvbrcdmuDU9-EXnqoUnBdgvTxcxKTUjiwRZkDes22ep4Z8bs13xWTNTwBexatF4Tgf1wpiOW6wZ05OppmpK8p1uS0CP64EmTyq2hWzLjEV0qRQi3uvH_NzoDvAZetLXLrSBSvwnnFTfZqZOuv3bnqEzYHts6g1JfTvXEgche3NEdU0cKzZQEl5a4JEvoooujAjpIPplt667slV_zBEGO4p2OC4LQB6Hs6EoEbdWmXN7cRg81d9');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-900 dark:text-white">RedRum</p>
+</div>
+<p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Player 8 (Not Ready) -->
+<div class="group relative flex items-center gap-4 bg-white dark:bg-surface-dark border border-gray-200 dark:border-surface-border p-3 rounded-xl shadow-sm transition-all hover:bg-gray-50 dark:hover:bg-[#1c222b]">
+<div class="absolute right-3 top-3">
+<span class="relative inline-flex rounded-full h-3 w-3 bg-gray-600"></span>
+</div>
+<div class="size-12 rounded-full bg-cover bg-center shrink-0 grayscale opacity-80" data-alt="Pink abstract avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBl1Q_Fg4QmKLjaLWc4k22dD2yJ_fBtnoYyFdGwWohQlGjSTAAk6Mvvz8Np4kvPzBePg0T6OZQ24M49nlRU3wjitjLgFj1UvuGTGqU_bmU-77-a7AQsRGEJeIDmJauhFwVD9Z_I4aFa3vpaU1UFx6fEUgZiXx-QSZQFSujMZZ0Py2aQkO_vblYSO9yMHox1S14hwk39CdXHASFOEyBGZhd38nbNN2WMM-eVDXJeGe0-LvajxRBLNo94BeCGOdFKpl8GhaqH6EeLlkxH');"></div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-2 mb-0.5">
+<p class="text-base font-bold truncate text-gray-700 dark:text-gray-300">KillerQueen</p>
+</div>
+<p class="text-xs text-gray-500 font-bold uppercase tracking-wide">Not Ready</p>
+</div>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-gray-400 hover:text-primary" title="Kick Player">
+<span class="material-symbols-outlined text-xl">block</span>
+</button>
+</div>
+<!-- Empty Slot 1 -->
+<div class="flex items-center justify-center h-[82px] rounded-xl border-2 border-dashed border-gray-200 dark:border-white/5 text-gray-400 dark:text-gray-600">
+<div class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-xl">person_add</span>
+<span>Empty Slot</span>
+</div>
+</div>
+<!-- Empty Slot 2 -->
+<div class="flex items-center justify-center h-[82px] rounded-xl border-2 border-dashed border-gray-200 dark:border-white/5 text-gray-400 dark:text-gray-600">
+<div class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-xl">person_add</span>
+<span>Empty Slot</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Settings & Actions (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Settings Panel -->
+<div class="bg-white dark:bg-surface-dark rounded-2xl border border-gray-200 dark:border-surface-border p-6 shadow-xl overflow-hidden relative">
+<!-- Subtle Header Accent -->
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 to-transparent"></div>
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">tune</span> Settings
+                        </h3>
+<button class="text-[10px] bg-primary/10 hover:bg-primary/20 text-primary px-2 py-1 rounded font-bold uppercase tracking-wider transition-colors">Host Only</button>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined">forum</span>
+<span class="text-sm font-medium">Discussion Time</span>
+</div>
+<span class="text-sm font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">90s</span>
+</div>
+<div class="w-full h-px bg-gray-100 dark:bg-white/5"></div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined">how_to_vote</span>
+<span class="text-sm font-medium">Voting Time</span>
+</div>
+<span class="text-sm font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">30s</span>
+</div>
+<div class="w-full h-px bg-gray-100 dark:bg-white/5"></div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center gap-3 text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined">visibility_off</span>
+<span class="text-sm font-medium">Roles Reveal</span>
+</div>
+<span class="text-sm font-bold text-gray-900 dark:text-white bg-gray-100 dark:bg-white/5 px-2 py-1 rounded">End</span>
+</div>
+</div>
+</div>
+<!-- Spacer to push buttons to bottom if needed -->
+<div class="hidden lg:block flex-grow"></div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3">
+<button class="w-full h-14 rounded-xl border border-gray-300 dark:border-white/10 bg-white dark:bg-transparent hover:bg-gray-50 dark:hover:bg-white/5 text-gray-900 dark:text-white font-bold tracking-wide transition-all flex items-center justify-center gap-3 group">
+<span class="material-symbols-outlined text-gray-400 group-hover:text-green-500 transition-colors">check_circle</span>
+                        MARK AS READY
+                    </button>
+<button class="w-full h-16 rounded-xl bg-primary hover:bg-red-600 text-white font-bold text-lg tracking-wide shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+<span>START GAME</span>
+<span class="material-symbols-outlined">play_arrow</span>
+</button>
+<p class="text-center text-xs text-gray-500 font-medium mt-2">Waiting for all players to be ready...</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

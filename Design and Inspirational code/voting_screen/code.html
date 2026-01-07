@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Voting Screen</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Noto+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e63743", // Red accent
+              "background-light": "#f8f6f6",
+              "background-dark": "#0E1117", // Requested dark background
+              "surface-dark": "#161B22", // Slightly lighter for cards
+              "border-dark": "#30363d",
+              "text-secondary": "#8b949e",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"],
+              "body": ["Noto Sans", "sans-serif"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "0.75rem", 
+              "xl": "1rem", 
+              "2xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom radio button styling integration */
+        .radio-custom:checked + div {
+            border-color: #e63743;
+            background-color: rgba(230, 55, 67, 0.1);
+        }
+        .radio-custom:checked + div .radio-indicator {
+            background-color: #e63743;
+            border-color: #e63743;
+        }
+        .radio-custom:checked + div .radio-indicator::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            margin: 3px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Top Navigation -->
+<header class="w-full border-b border-border-dark bg-surface-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined filled text-2xl">local_police</span>
+</div>
+<div>
+<h1 class="font-bold text-lg leading-tight tracking-tight">MAFIA</h1>
+<p class="text-xs text-text-secondary font-medium tracking-wide uppercase">Night 3 • Voting Phase</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-black/30 rounded-full pl-4 pr-1 py-1 border border-border-dark/50">
+<span class="text-xs font-bold text-text-secondary uppercase tracking-wider">Time Left</span>
+<div class="bg-primary text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-[0_0_15px_rgba(230,55,67,0.4)] animate-pulse">
+                    00:18
+                </div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-start py-8 px-4 sm:px-6">
+<div class="w-full max-w-2xl flex flex-col gap-8">
+<!-- Page Heading & Context -->
+<div class="flex flex-col gap-4 text-center mt-4">
+<div class="space-y-2">
+<h2 class="text-4xl md:text-5xl font-black tracking-tighter text-white drop-shadow-lg">VOTING</h2>
+<p class="text-primary font-medium text-lg tracking-wide uppercase">Who should be eliminated?</p>
+</div>
+<!-- Progress Bar -->
+<div class="w-full max-w-md mx-auto mt-2">
+<div class="flex justify-between text-xs font-medium text-text-secondary mb-2 px-1">
+<span>Voting Progress</span>
+<span>7/9 Voted</span>
+</div>
+<div class="h-2 w-full bg-surface-dark rounded-full overflow-hidden border border-border-dark">
+<div class="h-full bg-primary rounded-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(230,55,67,0.5)]" style="width: 78%"></div>
+</div>
+</div>
+</div>
+<!-- Player List (Voting Options) -->
+<div class="flex flex-col gap-3 mt-4">
+<!-- Player A: Standard Option -->
+<label class="group relative cursor-pointer">
+<input class="peer sr-only radio-custom" name="vote" type="radio"/>
+<div class="flex items-center p-4 rounded-xl border border-border-dark bg-surface-dark transition-all duration-200 hover:border-primary/50 hover:bg-surface-dark/80 group-active:scale-[0.99]">
+<div class="mr-4 flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-bold text-base group-hover:text-white transition-colors">Player A</p>
+<p class="text-xs text-text-secondary">Silent Observer</p>
+</div>
+<div class="radio-indicator w-5 h-5 rounded-full border-2 border-text-secondary transition-colors"></div>
+</div>
+</label>
+<!-- Player B: Selected Option -->
+<label class="group relative cursor-pointer">
+<input checked="" class="peer sr-only radio-custom" name="vote" type="radio"/>
+<div class="flex items-center p-4 rounded-xl border border-border-dark bg-surface-dark transition-all duration-200 group-active:scale-[0.99]">
+<div class="mr-4 flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-teal-500/20 text-teal-400 border border-teal-500/30 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-bold text-base">Player B</p>
+<p class="text-xs text-text-secondary">Accused by Player C</p>
+</div>
+<div class="radio-indicator w-5 h-5 rounded-full border-2 border-text-secondary transition-colors"></div>
+</div>
+</label>
+<!-- Player C: Standard Option -->
+<label class="group relative cursor-pointer">
+<input class="peer sr-only radio-custom" name="vote" type="radio"/>
+<div class="flex items-center p-4 rounded-xl border border-border-dark bg-surface-dark transition-all duration-200 hover:border-primary/50 hover:bg-surface-dark/80 group-active:scale-[0.99]">
+<div class="mr-4 flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-bold text-base group-hover:text-white transition-colors">Player C</p>
+<p class="text-xs text-text-secondary">Sheriff Claim</p>
+</div>
+<div class="radio-indicator w-5 h-5 rounded-full border-2 border-text-secondary transition-colors"></div>
+</div>
+</label>
+<!-- Player D: Dead/Eliminated Option (Disabled) -->
+<div class="relative opacity-50 grayscale select-none cursor-not-allowed">
+<div class="flex items-center p-4 rounded-xl border border-border-dark bg-black/20">
+<div class="mr-4 flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50" data-alt="Abstract skull or cross texture representing eliminated player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX8thYz04T-E0wSrYXjGVWJf80r0kfbyv57rYSoGjw-TlUgkqP3shxnN03vHndA67E6KSb365EgamTuMvJfiKdC0liYtpNv2saqm94vNJdZxALwhgmAaFAaB4HHW39770miVVsVwZbsV15Xv6eukcaRO5Lp0t258pFxncAt9lCmkbMe3iXP1JXTmIRUoLGryTXj8qY1qmn7F37Acwf6EGQZ7kyxlW5ZQt3M0JTWIrk6bUxa_KflEDZ-qLSU_SFwoVaJQvAS9qO691e"/>
+<span class="material-symbols-outlined relative z-10 text-gray-400">skull</span>
+</div>
+</div>
+<div class="flex-grow relative">
+<p class="font-bold text-base text-gray-500 line-through decoration-primary decoration-2">Player D</p>
+<p class="text-xs text-gray-600">Eliminated Night 2</p>
+</div>
+<div class="w-5 h-5 flex items-center justify-center text-red-900">
+<span class="material-symbols-outlined text-lg">block</span>
+</div>
+</div>
+</div>
+<!-- Player E: Standard Option -->
+<label class="group relative cursor-pointer">
+<input class="peer sr-only radio-custom" name="vote" type="radio"/>
+<div class="flex items-center p-4 rounded-xl border border-border-dark bg-surface-dark transition-all duration-200 hover:border-primary/50 hover:bg-surface-dark/80 group-active:scale-[0.99]">
+<div class="mr-4 flex-shrink-0">
+<div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+</div>
+<div class="flex-grow">
+<p class="font-bold text-base group-hover:text-white transition-colors">Player E</p>
+<p class="text-xs text-text-secondary">Suspicious</p>
+</div>
+<div class="radio-indicator w-5 h-5 rounded-full border-2 border-text-secondary transition-colors"></div>
+</div>
+</label>
+</div>
+<!-- Action Area -->
+<div class="sticky bottom-6 z-40 mt-4 backdrop-blur-sm">
+<button class="w-full relative group overflow-hidden rounded-xl bg-primary hover:bg-red-600 transition-colors duration-300 h-14 shadow-[0_0_20px_rgba(230,55,67,0.3)]">
+<div class="absolute inset-0 w-full h-full bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] hover:animate-[shimmer_2s_infinite]"></div>
+<span class="relative flex items-center justify-center gap-2 font-black text-white tracking-widest text-lg uppercase">
+<span class="material-symbols-outlined">how_to_vote</span>
+                        Confirm Vote
+                    </span>
+</button>
+<p class="text-center text-xs text-text-secondary mt-3 opacity-60">
+<span class="material-symbols-outlined align-middle text-sm mr-1">lock</span>
+                    Vote cannot be changed once submitted
+                 </p>
+</div>
+</div>
+</main>
+<!-- Shimmer Animation Definition -->
+<style>
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+    </style>
+</body></html>

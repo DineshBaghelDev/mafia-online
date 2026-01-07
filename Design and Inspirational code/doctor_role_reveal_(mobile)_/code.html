@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Doctor Role Reveal</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2beede",
+                        "background-light": "#f6f8f8",
+                        "background-dark": "#102220",
+                        "surface-dark": "#162b29", 
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    backgroundImage: {
+                        'radial-glow': 'radial-gradient(circle, rgba(43, 238, 222, 0.15) 0%, rgba(16, 34, 32, 0) 70%)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom utilities if absolutely needed, though sticking to Tailwind */
+        .glass-effect {
+            background: rgba(16, 34, 32, 0.6);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<!-- Background Decoration (Abstract blur) -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" data-alt="Abstract subtle teal glow in background"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" data-alt="Abstract subtle teal glow in background"></div>
+</div>
+<!-- Mobile Container Simulation for Desktop -->
+<div class="relative w-full max-w-[400px] h-[800px] max-h-[90vh] bg-[#112221] dark:bg-background-dark rounded-xl shadow-2xl border border-white/5 flex flex-col overflow-hidden z-10">
+<!-- Content Wrapper -->
+<div class="flex-1 flex flex-col p-6 relative">
+<!-- Header -->
+<div class="flex justify-center pt-8 pb-4">
+<p class="text-primary/60 text-xs font-bold tracking-[0.2em] uppercase">Your Role</p>
+</div>
+<!-- Role Reveal Section -->
+<div class="flex-1 flex flex-col items-center justify-center gap-8 z-10">
+<!-- Icon Container with Glow -->
+<div class="relative flex items-center justify-center">
+<!-- Glow Effect -->
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"></div>
+<!-- Icon Circle -->
+<div class="relative w-40 h-40 bg-surface-dark rounded-full border border-primary/20 flex items-center justify-center shadow-[0_0_30px_rgba(43,238,222,0.1)]">
+<span class="material-symbols-outlined text-primary text-[80px]" style="font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;">
+                            medical_services
+                        </span>
+</div>
+</div>
+<!-- Text Info -->
+<div class="flex flex-col items-center text-center gap-3">
+<h1 class="text-5xl font-extrabold text-primary tracking-tight">DOCTOR</h1>
+<div class="w-12 h-1 bg-primary/30 rounded-full my-2"></div>
+<p class="text-gray-300 text-base font-medium leading-relaxed max-w-[280px]">
+                        Heal players and protect them from the Mafia tonight.
+                    </p>
+</div>
+<!-- Stats / Attributes (Optional filler for visual balance) -->
+<div class="grid grid-cols-2 gap-4 w-full mt-4">
+<div class="bg-white/5 rounded-lg p-3 flex flex-col items-center border border-white/5">
+<span class="material-symbols-outlined text-primary/80 text-2xl mb-1">shield</span>
+<span class="text-xs text-gray-400 uppercase tracking-wider">Defense</span>
+<span class="text-white font-bold">High</span>
+</div>
+<div class="bg-white/5 rounded-lg p-3 flex flex-col items-center border border-white/5">
+<span class="material-symbols-outlined text-primary/80 text-2xl mb-1">visibility_off</span>
+<span class="text-xs text-gray-400 uppercase tracking-wider">Stealth</span>
+<span class="text-white font-bold">Medium</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action -->
+<div class="pt-6 pb-4 mt-auto">
+<button class="w-full h-14 bg-primary text-background-dark text-lg font-bold rounded-full hover:bg-white transition-colors duration-200 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(43,238,222,0.3)]">
+<span>TAP TO CONTINUE</span>
+<span class="material-symbols-outlined text-xl font-bold">arrow_forward</span>
+</button>
+</div>
+<!-- Background Overlay Gradient inside card -->
+<div class="absolute inset-0 bg-radial-glow pointer-events-none z-0"></div>
+</div>
+</div>
+</body></html>

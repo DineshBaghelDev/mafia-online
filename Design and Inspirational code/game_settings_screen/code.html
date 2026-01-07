@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Host Game Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E63946", // Requested Red
+                        "primary-hover": "#D02835",
+                        "background-dark": "#0E1117", // Requested Near-black
+                        "surface-dark": "#161B22",
+                        "surface-lighter": "#1C2128",
+                        "text-dim": "#8B949E",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "2xl": "16px", "3xl": "24px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #E63946;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 0 10px rgba(230, 57, 70, 0.4);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #30363d;
+            border-radius: 2px;
+        }input[type=range]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #E63946;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(230, 57, 70, 0.4);
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #30363d;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background-dark min-h-screen text-white flex items-center justify-center p-6 relative">
+<div class="fixed inset-0 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+</div>
+<main class="relative w-full max-w-[720px] bg-[#12161D] border border-white/5 shadow-2xl rounded-2xl overflow-hidden flex flex-col z-10">
+<header class="px-8 py-6 border-b border-white/5 bg-surface-dark flex items-center justify-between">
+<div>
+<h1 class="text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">settings_applications</span>
+                    GAME SETTINGS
+                </h1>
+<p class="text-text-dim text-sm mt-1">Configure the rules for the lobby.</p>
+</div>
+<div class="px-3 py-1 bg-white/5 rounded-full border border-white/5">
+<span class="text-xs font-semibold text-text-dim uppercase tracking-wider">Lobby #8291A</span>
+</div>
+</header>
+<div class="p-8 space-y-10 overflow-y-auto max-h-[70vh]">
+<section>
+<h2 class="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-5 ml-1">Composition</h2>
+<div class="space-y-4">
+<div class="bg-surface-dark hover:bg-surface-lighter transition-colors p-5 rounded-2xl border border-white/5 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl">theater_comedy</span>
+</div>
+<div>
+<h3 class="font-bold text-lg leading-tight">Number of Mafia</h3>
+<p class="text-sm text-text-dim">Impostors hiding in plain sight.</p>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-background-dark p-1.5 rounded-xl border border-white/5">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/20 text-white transition">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<span class="w-10 text-center font-bold text-xl font-mono">2</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary hover:bg-primary-hover active:scale-95 text-white shadow-lg shadow-primary/20 transition">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-dark hover:bg-surface-lighter transition-colors p-5 rounded-2xl border border-white/5 flex items-center justify-between group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-2xl">medical_services</span>
+</div>
+<div>
+<h3 class="font-bold text-lg leading-tight">Doctors</h3>
+<p class="text-sm text-text-dim">Can save one person per night.</p>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-background-dark p-1.5 rounded-xl border border-white/5">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/20 text-white transition">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<span class="w-10 text-center font-bold text-xl font-mono">1</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:bg-white/20 text-white transition">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-5 ml-1">Timers</h2>
+<div class="space-y-4">
+<div class="bg-surface-dark p-6 rounded-2xl border border-white/5 space-y-4">
+<div class="flex justify-between items-center mb-2">
+<label class="font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-text-dim">forum</span>
+                                Discussion Time
+                            </label>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary font-bold font-mono text-sm border border-primary/20">90s</span>
+</div>
+<input class="w-full" max="180" min="15" step="15" type="range" value="90"/>
+<div class="flex justify-between text-xs text-text-dim font-medium uppercase tracking-wider">
+<span>15s</span>
+<span>180s</span>
+</div>
+</div>
+<div class="bg-surface-dark p-6 rounded-2xl border border-white/5 space-y-4">
+<div class="flex justify-between items-center mb-2">
+<label class="font-bold text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-text-dim">how_to_vote</span>
+                                Voting Time
+                            </label>
+<span class="px-2 py-1 rounded bg-primary/10 text-primary font-bold font-mono text-sm border border-primary/20">60s</span>
+</div>
+<input class="w-full" max="120" min="10" step="10" type="range" value="60"/>
+<div class="flex justify-between text-xs text-text-dim font-medium uppercase tracking-wider">
+<span>10s</span>
+<span>120s</span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-5 ml-1">Gameplay Rules</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="bg-surface-dark p-5 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-colors">
+<div class="pr-4">
+<h3 class="font-bold text-sm text-white mb-1">Confirm Ejects</h3>
+<p class="text-xs text-text-dim leading-snug">Reveal role upon ejection.</p>
+</div>
+<div class="relative w-12 h-7 rounded-full bg-primary transition-colors flex items-center px-1">
+<div class="w-5 h-5 rounded-full bg-white shadow-sm transform translate-x-5 transition-transform"></div>
+</div>
+</div>
+<div class="bg-surface-dark p-5 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-colors">
+<div class="pr-4">
+<h3 class="font-bold text-sm text-white mb-1">Anonymous Votes</h3>
+<p class="text-xs text-text-dim leading-snug">Hide voting results.</p>
+</div>
+<div class="relative w-12 h-7 rounded-full bg-surface-lighter border border-white/10 transition-colors flex items-center px-1">
+<div class="w-5 h-5 rounded-full bg-text-dim/50 shadow-sm transform translate-x-0 transition-transform"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<footer class="p-8 border-t border-white/5 bg-surface-dark/95 backdrop-blur-sm z-20">
+<button class="group w-full h-14 bg-primary hover:bg-primary-hover text-white rounded-xl font-bold text-lg shadow-[0_4px_20px_rgba(230,57,70,0.3)] hover:shadow-[0_4px_25px_rgba(230,57,70,0.5)] transition-all active:scale-[0.99] flex items-center justify-center gap-3">
+<span>SAVE SETTINGS</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="w-full mt-4 text-sm text-text-dim hover:text-white font-medium transition-colors">
+                Reset to Defaults
+            </button>
+</footer>
+</main>
+
+</body></html>

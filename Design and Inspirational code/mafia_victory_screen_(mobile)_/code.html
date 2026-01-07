@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Victory Screen</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ec1313",
+              "background-light": "#f8f6f6",
+              "background-dark": "#221010", // Deep dark red/brown base
+              "surface-dark": "#1a0b0b",    // Slightly lighter for the card
+              "surface-highlight": "#2f1515" // For list items
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.25rem", 
+              "lg": "0.5rem", 
+              "xl": "0.75rem", 
+              "2xl": "1rem",
+              "full": "9999px"
+            },
+            backgroundImage: {
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2f1515;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ec1313;
+        }
+    </style>
+</head>
+<body class="bg-[#0E1117] text-white font-display flex items-center justify-center min-h-screen p-0 sm:p-4 overflow-hidden">
+<!-- Desktop Wrapper: Blurry Background Context -->
+<div class="fixed inset-0 z-0 opacity-30 pointer-events-none" data-alt="Abstract dark moody background with red lighting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDNpP4ZAQx_T5ygmfbdnwhRSgrws2SvMRu2v3TwR2ToxNIpSl2FXqjknf4jjdx0tdXLDdsTK0oPXNIVIgC6eyZChMdhmSJGXVeXLnUdHzwpAew_drl3ZWBL0p6YuXdnW1-in-JoQgJifl0BmBUF70tk9-2zLz83MBYZJ5qh682gw628Lb4vMPkkqlBpi1tl_X_I8ixhHn6GiEktEookp9XyLwT0-km5rKUmfq1RELEcSD6isRplwpXa757gxHi-6r1Ix5_CI6fw41iQ'); background-size: cover; background-position: center;">
+</div>
+<!-- Mobile Container -->
+<div class="relative z-10 w-full max-w-md bg-background-dark dark:bg-background-dark h-screen sm:h-[850px] sm:max-h-[90vh] sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-white/5 sm:border-primary/20">
+<!-- Victory Graphic / Header Area -->
+<div class="relative shrink-0 pt-12 pb-6 px-6 flex flex-col items-center justify-center text-center overflow-hidden">
+<!-- Background Glow Effect -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-primary/20 via-background-dark to-background-dark z-0 pointer-events-none"></div>
+<!-- Icon -->
+<div class="relative z-10 mb-6 animate-pulse">
+<div class="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border border-primary/30 shadow-[0_0_30px_rgba(236,19,19,0.3)]">
+<span class="material-symbols-outlined text-primary text-[48px]">
+                        skull
+                    </span>
+</div>
+</div>
+<!-- Title -->
+<div class="relative z-10 flex flex-col gap-2">
+<h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white uppercase drop-shadow-lg">
+                    MAFIA <span class="text-primary">WINS!</span>
+</h1>
+<p class="text-primary/70 text-base font-medium tracking-wide">
+                    The town has fallen to darkness.
+                </p>
+</div>
+</div>
+<!-- Scrollable Content: Player List -->
+<div class="flex-1 overflow-y-auto px-4 pb-4">
+<!-- Section Header -->
+<div class="sticky top-0 bg-background-dark/95 backdrop-blur-sm z-20 py-3 border-b border-white/5 mb-2">
+<h3 class="text-gray-400 text-xs font-bold uppercase tracking-widest px-2">Final Roles</h3>
+</div>
+<div class="flex flex-col gap-3">
+<!-- WINNER: Godfather -->
+<div class="group flex items-center gap-4 bg-surface-highlight hover:bg-surface-highlight/80 transition-colors p-3 rounded-xl border border-primary/30 shadow-lg shadow-primary/5">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-12 w-12 border-2 border-primary" data-alt="Avatar of PlayerOne" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuABOlSsxWuwfcebInZM0pfr3Am0yoVzp-wES1auu7o54dT-TrvJGOPKxZpLu9XRwJtz_3NWMiVeu4jx61kv0EIV15X6nS_XEzROS-CWllO-TnP3USguVIaDwMHsuL9Bqk_phyix30DfsUkLtFZMA4ZpcwfkjN_5xuLWTYlIIpjvTr8AN-WEOOfDtMkH16Mik5hyilAYCWdYYM4lDAMQ-ZMhkVqB7aqFxES75b3AoLxo3Ddt32Uhi3tpqUW_sN2dsbn2Ok80v_Yl1E9H");'></div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-white rounded-full p-1 border border-surface-highlight">
+<span class="material-symbols-outlined text-[12px] block">crown</span>
+</div>
+</div>
+<div class="flex flex-col justify-center grow">
+<div class="flex justify-between items-center w-full">
+<p class="text-white text-base font-bold leading-none">PlayerOne</p>
+<span class="text-primary text-xs font-bold bg-primary/10 px-2 py-1 rounded">WINNER</span>
+</div>
+<p class="text-primary/80 text-sm font-medium mt-1">Godfather</p>
+</div>
+</div>
+<!-- WINNER: Mafioso -->
+<div class="group flex items-center gap-4 bg-surface-highlight hover:bg-surface-highlight/80 transition-colors p-3 rounded-xl border border-primary/20">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-12 w-12 border border-primary/50 opacity-90" data-alt="Avatar of PlayerTwo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDJlQ6XMTabMf6YI5BvOxBFCb1icUhnX-a2qAO-TTQWUmomvGYoi6NJAg-lyaz3i1rt42i59ZSukF3eIV9iUkTvCGmxxfcu3IlSaVVlw-FlJrNZxrA61MdZTGI45p5n19o-67q3ZfgdaeTZ_sYWozH8fbfVUj6eMU6dMOuAZefo4CZP8RXtmBH1CWDT0YHTSfZtkvJACzcZh5Y4fjhgGrR-KQ2tiCqRVygCmQ2MrvSrChUZgMS6wQCjbv7vqf0Gff6VEKSTibkRs-LU");'></div>
+<div class="flex flex-col justify-center grow">
+<div class="flex justify-between items-center w-full">
+<p class="text-white text-base font-semibold leading-none">PlayerTwo</p>
+<span class="text-primary text-xs font-bold bg-primary/10 px-2 py-1 rounded">WINNER</span>
+</div>
+<p class="text-primary/80 text-sm font-medium mt-1">Mafioso</p>
+</div>
+</div>
+<!-- LOSER: Doctor (Dead) -->
+<div class="group flex items-center gap-4 bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-xl border border-transparent opacity-70">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-12 w-12 grayscale" data-alt="Avatar of PlayerThree" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCpkDSw45x9b1WeVOjw83XfhOaPWlFHNIiJfhZPg7OzpSs1a7CAchTr3k5CgSllGCmy9WBEX5CvyyZzawVDd7J12x87amv-f_ItTKl47uMz-P8JqfSa_pcoB9zQs-lqw0bZoDOkC49q0pOThdwfOtRhKnqH9io0A9tBRrcK7yHt00EFg-t1r9of4qSGGpKvA_4YkMDfccwnIiUx6HCWi0e-ycf-6-cXlJJdzUF9oQPb-kH6mMpaHYW9zSeE1ZToVJ6Fw6R6gdymqhaE");'></div>
+<div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white/80 text-[20px]">close</span>
+</div>
+</div>
+<div class="flex flex-col justify-center grow">
+<p class="text-gray-300 text-base font-medium leading-none line-through decoration-primary decoration-2">PlayerThree</p>
+<p class="text-gray-500 text-sm font-normal mt-1">Doctor</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-gray-600">local_hospital</span>
+</div>
+</div>
+<!-- LOSER: Villager -->
+<div class="group flex items-center gap-4 bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-xl border border-transparent">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-12 w-12 grayscale filter contrast-75" data-alt="Avatar of PlayerFour" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCf-mg7PDX_kVyQ_6kNAPbcZD93DaerrYftHve-YMv0GC8EakVyDKCgtnaDoLgjDd4isoiJZmH_TdgvvRu5T4bPtb18YivpZQ6GpRcCjqfi08zYUduzolQb5WuOUuwQZw-7H0JJDBhWFeMTsb8mG6fJn8TdQJjAIHfMkszvxS0W7_QAlIB_yDwPoPhKgjzRSoUegnC2iTrvcmAmWuJBfbiSHTqBuGXycjer5hMOSIWAtGFu_nR45E9_diCtdA_REXHyXCGtbBGQgvt4");'></div>
+<div class="flex flex-col justify-center grow">
+<p class="text-gray-300 text-base font-medium leading-none">PlayerFour</p>
+<p class="text-gray-500 text-sm font-normal mt-1">Villager</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-gray-600">person</span>
+</div>
+</div>
+<!-- LOSER: Sheriff (Dead) -->
+<div class="group flex items-center gap-4 bg-white/5 hover:bg-white/10 transition-colors p-3 rounded-xl border border-transparent opacity-70">
+<div class="relative">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-12 w-12 grayscale" data-alt="Avatar of PlayerFive" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDyxlR91W-kx8PPTVfV-MlDFd3KwFF2zMa7ykIIma-irOw8x8JoDzerHOlj_c_E1VmXMNL3KkimPV4UjnCEMB9pBSY--YppgIaUWSb3Mw1OsWkuA3L8tB64VH9MDx11MMa4S8NeLl7i0tS1mHP7-YmlNvG6FN68lVmPk_r5MyEgoPSEMcygn9cysZnwTCTTQVY8g8--rvphAeDAEoWZBGKss7FKmtO7z-_FBi1t-Lwe5AIfNheKqob1ih95z90xCOdrFAkDXuozKx80");'></div>
+<div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-white/80 text-[20px]">close</span>
+</div>
+</div>
+<div class="flex flex-col justify-center grow">
+<p class="text-gray-300 text-base font-medium leading-none line-through decoration-primary decoration-2">PlayerFive</p>
+<p class="text-gray-500 text-sm font-normal mt-1">Sheriff</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-gray-600">local_police</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer / Action Buttons -->
+<div class="p-6 bg-background-dark/95 backdrop-blur-md border-t border-white/5 flex flex-col gap-3 shrink-0 relative z-20">
+<!-- Shadow gradient going up from footer -->
+<div class="absolute -top-10 left-0 w-full h-10 bg-gradient-to-t from-background-dark to-transparent pointer-events-none"></div>
+<button class="w-full bg-primary hover:bg-red-600 active:bg-red-700 text-white font-bold h-12 rounded-xl text-base tracking-wide flex items-center justify-center gap-2 transition-all shadow-[0_0_15px_rgba(236,19,19,0.3)]">
+<span class="material-symbols-outlined text-[20px]">replay</span>
+                PLAY AGAIN
+            </button>
+<button class="w-full bg-transparent border border-white/10 hover:border-white/30 text-gray-400 hover:text-white font-semibold h-12 rounded-xl text-base tracking-wide transition-all">
+                EXIT
+            </button>
+</div>
+</div>
+</body></html>

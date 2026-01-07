@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Host Game Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ec1313",
+              "background-light": "#f8f6f6",
+              "background-dark": "#0E1117", // Using the user's requested darker shade
+              "surface-dark": "#161B22",
+              "surface-dark-lighter": "#242932",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "1rem", 
+              "lg": "1rem", 
+              "xl": "1.5rem", 
+              "2xl": "2rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+            width: 100%; /* Specific width is required for Firefox. */
+            background: transparent; /* Otherwise white in Chrome */
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+        }
+
+        input[type=range]:focus {
+            outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+        }
+
+        input[type=range]::-ms-track {
+            width: 100%;
+            cursor: pointer;
+
+            /* Hides the slider so custom styles can be added */
+            background: transparent; 
+            border-color: transparent;
+            color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white overflow-hidden h-screen flex justify-center items-center relative">
+<!-- Background Decoration mimicking a suspenseful atmosphere -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[100px]"></div>
+</div>
+<!-- Mobile Container Wrapper -->
+<div class="relative z-10 w-full max-w-[420px] h-full sm:h-[90vh] sm:rounded-2xl bg-surface-dark border border-white/5 shadow-2xl flex flex-col overflow-hidden">
+<!-- Header -->
+<header class="shrink-0 flex items-center justify-between px-6 py-5 border-b border-white/5 bg-surface-dark/95 backdrop-blur-md sticky top-0 z-20">
+<h2 class="text-xl font-extrabold tracking-tight">GAME SETTINGS</h2>
+<button class="flex items-center justify-center size-10 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white">
+<span class="material-symbols-outlined">close</span>
+</button>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto px-6 py-6 space-y-8 scrollbar-hide">
+<!-- Timer Settings Section -->
+<section class="space-y-4">
+<h3 class="text-sm font-bold text-white/50 uppercase tracking-wider">Timer Settings</h3>
+<!-- Discussion Time Slider -->
+<div class="bg-surface-dark-lighter p-5 rounded-xl space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-bold text-base">Discussion Time</label>
+<span class="text-primary font-bold text-lg">60s</span>
+</div>
+<div class="relative w-full h-6 flex items-center">
+<div class="absolute w-full h-1.5 bg-white/10 rounded-full"></div>
+<div class="absolute h-1.5 bg-primary rounded-full" style="width: 50%;"></div>
+<div class="absolute size-5 bg-white rounded-full shadow-lg cursor-pointer transform -translate-x-1/2 left-1/2 border-2 border-primary"></div>
+<!-- Invisible input for interaction simulation -->
+<input class="absolute w-full opacity-0 cursor-pointer h-full z-10" max="180" min="30" type="range" value="60"/>
+</div>
+<div class="flex justify-between text-xs text-white/40 font-medium">
+<span>30s</span>
+<span>180s</span>
+</div>
+</div>
+<!-- Voting Time Slider -->
+<div class="bg-surface-dark-lighter p-5 rounded-xl space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-bold text-base">Voting Time</label>
+<span class="text-primary font-bold text-lg">30s</span>
+</div>
+<div class="relative w-full h-6 flex items-center">
+<div class="absolute w-full h-1.5 bg-white/10 rounded-full"></div>
+<div class="absolute h-1.5 bg-primary rounded-full" style="width: 25%;"></div>
+<div class="absolute size-5 bg-white rounded-full shadow-lg cursor-pointer transform -translate-x-1/2 left-1/4 border-2 border-primary"></div>
+<input class="absolute w-full opacity-0 cursor-pointer h-full z-10" max="90" min="15" type="range" value="30"/>
+</div>
+<div class="flex justify-between text-xs text-white/40 font-medium">
+<span>15s</span>
+<span>90s</span>
+</div>
+</div>
+</section>
+<!-- Roles Configuration Section -->
+<section class="space-y-4">
+<h3 class="text-sm font-bold text-white/50 uppercase tracking-wider">Roles Configuration</h3>
+<!-- Mafia Count Stepper -->
+<div class="flex items-center justify-between bg-surface-dark-lighter p-4 rounded-xl">
+<div class="flex flex-col">
+<span class="font-bold text-base">Mafia Count</span>
+<span class="text-xs text-white/50">Impostors in the game</span>
+</div>
+<div class="flex items-center bg-surface-dark rounded-full p-1 border border-white/5">
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/70 transition-colors">
+<span class="material-symbols-outlined text-lg">remove</span>
+</button>
+<span class="w-8 text-center font-bold text-lg">2</span>
+<button class="size-8 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
+<span class="material-symbols-outlined text-lg">add</span>
+</button>
+</div>
+</div>
+<!-- Roles Toggles -->
+<div class="space-y-2">
+<!-- Doctor -->
+<div class="flex items-center justify-between bg-surface-dark-lighter p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+<span class="material-symbols-outlined">medical_services</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base">Doctor</span>
+<span class="text-xs text-white/50">Can save one player</span>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Sheriff -->
+<div class="flex items-center justify-between bg-surface-dark-lighter p-4 rounded-xl">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400">
+<span class="material-symbols-outlined">local_police</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-base">Sheriff</span>
+<span class="text-xs text-white/50">Can eliminate players</span>
+</div>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Game Rules Section -->
+<section class="space-y-4">
+<h3 class="text-sm font-bold text-white/50 uppercase tracking-wider">Game Rules</h3>
+<!-- Reveal Roles Toggle -->
+<div class="flex items-center justify-between bg-surface-dark-lighter p-4 rounded-xl">
+<div class="flex flex-col">
+<span class="font-bold text-base">Confirm Ejects</span>
+<span class="text-xs text-white/50">Show role on ejection</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Anonymous Voting Toggle -->
+<div class="flex items-center justify-between bg-surface-dark-lighter p-4 rounded-xl">
+<div class="flex flex-col">
+<span class="font-bold text-base">Anonymous Voting</span>
+<span class="text-xs text-white/50">Hide votes during meeting</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</section>
+<!-- Padding for bottom button -->
+<div class="h-20"></div>
+</div>
+<!-- Sticky Footer -->
+<div class="shrink-0 p-6 bg-surface-dark/95 backdrop-blur-md border-t border-white/5 absolute bottom-0 w-full z-20">
+<button class="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                SAVE SETTINGS
+            </button>
+</div>
+</div>
+</body></html>

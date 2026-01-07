@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Chat</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#ec1313", // Red accent
+                "primary-dark": "#c50f0f",
+                "background-light": "#f8f6f6",
+                "background-dark": "#221010", // Theme base, but we will use specific #0E1117 for the card
+                "surface-dark": "#0E1117",
+                "surface-light": "#1F2937",
+                "bubble-dark": "#161b22",
+              },
+              fontFamily: {
+                "display": ["Manrope", "sans-serif"],
+                "body": ["Manrope", "sans-serif"],
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "2xl": "1rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        .red-vignette {
+            box-shadow: inset 0 0 80px rgba(236, 19, 19, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-black font-display text-white overflow-hidden h-screen w-screen flex items-center justify-center">
+<!-- Background blurred effect to focus on mobile view -->
+<div class="absolute inset-0 z-0 bg-neutral-900" data-alt="Abstract dark foggy background">
+<div class="absolute inset-0 bg-gradient-to-br from-neutral-900 via-black to-red-950 opacity-80"></div>
+<div class="absolute w-full h-full bg-[url('https://images.unsplash.com/photo-1616423640778-2cfd1e67c8cb?q=80&amp;w=2000&amp;auto=format&amp;fit=crop')] bg-cover bg-center opacity-10 blur-xl mix-blend-overlay" data-alt="Subtle noise texture"></div>
+</div>
+<!-- Mobile Device Container -->
+<div class="relative z-10 w-full max-w-[400px] h-full sm:h-[85vh] sm:max-h-[850px] bg-[#0E1117] sm:rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border border-white/5 relative group/design-root red-vignette">
+<!-- Header -->
+<header class="flex-none flex items-center justify-between px-6 py-4 bg-[#0E1117]/90 backdrop-blur-md border-b border-white/5 z-20">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">visibility_off</span>
+</div>
+<div>
+<h2 class="text-white text-base font-bold leading-none tracking-wide">MAFIA CHAT</h2>
+<p class="text-red-400 text-xs font-medium mt-1 animate-pulse">Night Phase • 00:45</p>
+</div>
+</div>
+<button class="size-10 rounded-full hover:bg-white/5 flex items-center justify-center text-gray-400 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</header>
+<!-- Chat Area -->
+<div class="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth pb-4" id="chat-container">
+<!-- System Notice -->
+<div class="flex justify-center py-2">
+<span class="text-[11px] font-bold text-gray-500 bg-white/5 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Secure Channel Established
+                </span>
+</div>
+<!-- Incoming Message (Godfather) -->
+<div class="flex items-end gap-3 justify-start">
+<div class="flex flex-col gap-1 items-start max-w-[85%]">
+<p class="text-red-300 text-[11px] font-bold ml-1">Godfather</p>
+<div class="rounded-2xl rounded-bl-none px-4 py-3 bg-[#1F2937] text-gray-100 shadow-sm border border-white/5">
+<p class="text-sm leading-relaxed">Who are we taking out tonight? The Detective has been too quiet.</p>
+</div>
+<span class="text-[10px] text-gray-600 ml-1">23:58</span>
+</div>
+</div>
+<!-- Incoming Message (Consigliere) -->
+<div class="flex items-end gap-3 justify-start">
+<div class="flex flex-col gap-1 items-start max-w-[85%]">
+<p class="text-red-300 text-[11px] font-bold ml-1">Consigliere</p>
+<div class="rounded-2xl rounded-bl-none px-4 py-3 bg-[#1F2937] text-gray-100 shadow-sm border border-white/5">
+<p class="text-sm leading-relaxed">I suspect Player 4. They voted strangely yesterday.</p>
+</div>
+<span class="text-[10px] text-gray-600 ml-1">23:59</span>
+</div>
+</div>
+<!-- Outgoing Message (Me) -->
+<div class="flex items-end gap-3 justify-end">
+<div class="flex flex-col gap-1 items-end max-w-[85%]">
+<div class="rounded-2xl rounded-br-none px-4 py-3 bg-primary text-white shadow-md shadow-primary/10">
+<p class="text-sm leading-relaxed font-medium">I agree. Player 4 is dangerous. Let's silence them.</p>
+</div>
+<span class="text-[10px] text-gray-500 mr-1">00:01</span>
+</div>
+</div>
+<!-- Incoming Message (Godfather) -->
+<div class="flex items-end gap-3 justify-start">
+<div class="flex flex-col gap-1 items-start max-w-[85%]">
+<p class="text-red-300 text-[11px] font-bold ml-1">Godfather</p>
+<div class="rounded-2xl rounded-bl-none px-4 py-3 bg-[#1F2937] text-gray-100 shadow-sm border border-white/5">
+<p class="text-sm leading-relaxed">It's decided then. Lock it in.</p>
+</div>
+<span class="text-[10px] text-gray-600 ml-1">00:02</span>
+</div>
+</div>
+<!-- Typing Indicator -->
+<div class="flex items-end gap-3 justify-start opacity-60">
+<div class="flex flex-col gap-1 items-start">
+<p class="text-red-300 text-[11px] font-bold ml-1">Consigliere</p>
+<div class="rounded-2xl rounded-bl-none px-4 py-3 bg-[#1F2937] text-gray-100 border border-white/5 flex gap-1 items-center h-[44px]">
+<div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+<div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+<div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<footer class="flex-none p-4 bg-[#0E1117] border-t border-white/5 z-20">
+<div class="relative flex items-center w-full">
+<input class="w-full bg-[#1F2937] text-white placeholder-gray-500 border-none rounded-full py-4 pl-5 pr-14 focus:ring-1 focus:ring-primary focus:outline-none text-sm transition-shadow shadow-inner" placeholder="Whisper to mafia..." type="text"/>
+<button class="absolute right-2 p-2 bg-primary hover:bg-primary-dark text-white rounded-full transition-colors shadow-lg shadow-primary/20 flex items-center justify-center group">
+<span class="material-symbols-outlined text-[20px] ml-0.5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-200">send</span>
+</button>
+</div>
+</footer>
+</div>
+</body></html>

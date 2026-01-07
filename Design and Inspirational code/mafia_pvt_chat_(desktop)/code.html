@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mafia Private Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "mafia-red": "#E63946",
+                        "mafia-bg": "#0E1117",
+                        "mafia-surface": "#151921",
+                        "bubble-partner": "#1F242E",
+                    },
+                    fontFamily: {
+                        "sans": ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "xl": "12px",
+                        "2xl": "16px",
+                    }
+                },
+            },
+        }
+    </script>
+<style>.scrollbar-custom::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-mafia-bg text-gray-200 font-sans h-screen w-full flex justify-center overflow-hidden">
+<main class="relative w-full max-w-[720px] h-full flex flex-col bg-[#0b0e13] border-x border-white/5 shadow-2xl overflow-hidden">
+<div class="absolute inset-0 pointer-events-none">
+<div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[60%] h-[300px] bg-mafia-red/5 blur-[80px] rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-mafia-red/5 to-transparent"></div>
+</div>
+<header class="relative z-20 flex items-center justify-between px-8 py-5 border-b border-white/5 bg-[#0b0e13]/80 backdrop-blur-md">
+<div class="flex items-center gap-4">
+<div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-mafia-red/10 border border-mafia-red/20 text-mafia-red">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</div>
+<div>
+<h1 class="text-white font-extrabold tracking-[0.15em] text-sm uppercase">Mafia Chat</h1>
+<p class="text-xs text-white/40 font-medium">Night Phase • Private Channel</p>
+</div>
+</div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-mafia-red opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-mafia-red"></span>
+</span>
+<span class="text-[10px] font-bold text-white/60 tracking-wider">LIVE</span>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-custom relative z-10 flex flex-col">
+<div class="flex justify-center py-4">
+<span class="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em] bg-white/5 px-4 py-1 rounded-full border border-white/5">
+                    Discuss who to eliminate
+                </span>
+</div>
+<div class="flex flex-col items-start max-w-[75%] gap-1.5 self-start group">
+<span class="text-[11px] font-bold text-white/40 ml-1 uppercase tracking-wider">Player 4 (Godfather)</span>
+<div class="bg-bubble-partner text-gray-200 px-5 py-3.5 rounded-2xl rounded-tl-sm border border-white/5 shadow-sm">
+<p class="text-[15px] leading-relaxed">I noticed Player 7 was very quiet during the accusation phase. Could be the doctor hiding.</p>
+</div>
+</div>
+<div class="flex flex-col items-end max-w-[75%] gap-1.5 self-end group">
+<div class="bg-mafia-red text-white px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-[0_4px_20px_-4px_rgba(230,57,70,0.4)]">
+<p class="text-[15px] leading-relaxed font-medium">I was thinking the same thing. They deflected when 3 asked them a question.</p>
+</div>
+<span class="text-[10px] text-white/20 mr-1 font-medium">Just now</span>
+</div>
+<div class="flex flex-col items-start max-w-[75%] gap-1.5 self-start group">
+<span class="text-[11px] font-bold text-white/40 ml-1 uppercase tracking-wider">Player 4 (Godfather)</span>
+<div class="bg-bubble-partner text-gray-200 px-5 py-3.5 rounded-2xl rounded-tl-sm border border-white/5 shadow-sm">
+<p class="text-[15px] leading-relaxed">Let's lock it in then. We take out 7 tonight. If they flip doctor, we win.</p>
+</div>
+</div>
+<div class="flex flex-col items-end max-w-[75%] gap-1.5 self-end group">
+<div class="bg-mafia-red text-white px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-[0_4px_20px_-4px_rgba(230,57,70,0.4)]">
+<p class="text-[15px] leading-relaxed font-medium">Agreed. Voting 7.</p>
+</div>
+<span class="text-[10px] text-white/20 mr-1 font-medium">Sending...</span>
+</div>
+<div class="h-2"></div> 
+</div>
+<div class="relative z-20 p-6 bg-[#0b0e13] border-t border-white/5">
+<form class="flex flex-col gap-4" onsubmit="event.preventDefault();">
+<div class="relative group">
+<div class="absolute inset-0 bg-mafia-red/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+<div class="relative flex gap-3">
+<input class="w-full bg-mafia-surface border border-white/10 rounded-xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:border-mafia-red/50 focus:bg-[#1a1e26] transition-all text-[15px]" placeholder="Type message..." type="text"/>
+<button class="bg-mafia-red hover:bg-[#d42d3a] text-white font-bold px-8 rounded-xl transition-all shadow-[0_0_20px_rgba(230,57,70,0.2)] hover:shadow-[0_0_30px_rgba(230,57,70,0.4)] hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2" type="submit">
+<span class="text-sm tracking-widest">SEND</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-center px-1">
+<span class="text-[10px] text-white/30 font-medium">ENTER to send</span>
+<span class="text-[10px] text-mafia-red font-bold animate-pulse">20s remaining</span>
+</div>
+</form>
+</div>
+</main>
+
+</body></html>
