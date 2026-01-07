@@ -142,6 +142,9 @@ node_modules/
 .pnp
 .pnp.js
 
+.next/
+.next
+
 # Testing
 coverage/
 .nyc_output/
