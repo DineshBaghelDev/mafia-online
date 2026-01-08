@@ -10,7 +10,17 @@ export class GameService {
         return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
-    async createRoom(hostId: string, username: string, isPublic: boolean = false, maxPlayers: number = 10): Promise<RoomState> {
+    async createRoom(
+        hostId: string, 
+        username: string, 
+        isPublic: boolean = false, 
+        maxPlayers: number = 10,
+        customSettings?: {
+            discussionTime?: number;
+            votingTime?: number;
+            nightTime?: number;
+        }
+    ): Promise<RoomState> {
         const roomId = uuidv4();
         const roomCode = this.generateRoomCode();
         
@@ -30,9 +40,9 @@ export class GameService {
             players: { [hostId]: host },
             settings: {
                 maxPlayers,
-                discussionTime: 90,
-                votingTime: 30,
-                nightTime: 30,
+                discussionTime: customSettings?.discussionTime || 90,
+                votingTime: customSettings?.votingTime || 30,
+                nightTime: customSettings?.nightTime || 30,
                 isPublic
             },
             isPublic,
@@ -50,8 +60,14 @@ export class GameService {
         const room = await store.getRoomByCode(code);
         if (!room) throw new Error("Room not found");
         if (room.phase !== 'lobby') throw new Error("Game already started");
+        
+        // If player is already in THIS room, just return success (e.g., rejoin after create)
+        if (room.players[userId]) {
+            console.log(`Player ${userId} already in room ${room.id}, returning room state`);
+            return room;
+        }
+        
         if (Object.keys(room.players).length >= room.settings.maxPlayers) throw new Error("Room full");
-        if (room.players[userId]) throw new Error("Already in room");
 
         const player: Player = {
             id: userId,
@@ -64,6 +80,39 @@ export class GameService {
 
         room.players[userId] = player;
         await store.updateRoom(room.id, room);
+        return room;
+    }
+
+    async resetRoomToLobby(roomId: string): Promise<RoomState> {
+        const room = await store.getRoom(roomId);
+        if (!room) throw new Error("Room not found");
+
+        // Reset room state
+        room.phase = 'lobby';
+        room.currentRound = 0;
+        room.votes = {};
+        room.actions = {};
+        room.chatHistory = [];
+        room.nightResult = undefined;
+        room.eliminatedThisRound = undefined;
+        room.winner = undefined;
+        room.timerEnd = undefined;
+
+        // Reset all players
+        Object.values(room.players).forEach(player => {
+            player.isAlive = true;
+            player.ready = false;
+            delete player.role;
+        });
+
+        // Clear any running timers
+        const timer = this.timers.get(roomId);
+        if (timer) {
+            clearTimeout(timer);
+            this.timers.delete(roomId);
+        }
+
+        await store.updateRoom(roomId, room);
         return room;
     }
 
@@ -114,14 +163,14 @@ export class GameService {
         // Assign roles
         this.assignRoles(room);
         
-        room.phase = 'roleReveal';
+        room.phase = 'role_reveal';
         room.currentRound = 1;
         room.gameStartedAt = Date.now();
         
         await store.updateRoom(roomId, room);
         
-        // Auto-transition to night after 5 seconds
-        this.schedulePhaseTransition(roomId, 5000, async () => {
+        // Auto-transition to night after 8 seconds
+        this.schedulePhaseTransition(roomId, 8000, async () => {
             await this.transitionToNight(roomId);
         });
         
@@ -254,7 +303,7 @@ export class GameService {
         
         // Check win condition
         if (this.checkWinCondition(room)) {
-            room.phase = 'ended';
+            room.phase = 'game_end';
             await store.updateRoom(roomId, room);
             return room;
         }
@@ -350,7 +399,7 @@ export class GameService {
         
         // Check win condition
         if (this.checkWinCondition(room)) {
-            room.phase = 'ended';
+            room.phase = 'game_end';
             await store.updateRoom(roomId, room);
             return room;
         }
@@ -396,7 +445,7 @@ export class GameService {
         }
         
         // Dead players can't chat (optional rule)
-        if (!sender.isAlive && room.phase !== 'ended') {
+        if (!sender.isAlive && room.phase !== 'game_end') {
             throw new Error("Dead players cannot chat");
         }
         
@@ -443,10 +492,10 @@ export class GameService {
         }
         
         // If game is in progress and player was alive, mark as dead
-        if (room.phase !== 'lobby' && room.phase !== 'ended') {
+        if (room.phase !== 'lobby' && room.phase !== 'game_end') {
             // Check win condition after player leaves
             if (this.checkWinCondition(room)) {
-                room.phase = 'ended';
+                room.phase = 'game_end';
             }
         }
 

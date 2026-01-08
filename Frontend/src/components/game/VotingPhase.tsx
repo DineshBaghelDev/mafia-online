@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { RoomState } from '@/types';
+import { Timer } from './Timer';
 
 interface VotingPhaseProps {
     room: RoomState;
@@ -16,16 +17,14 @@ export function VotingPhase({ room }: VotingPhaseProps) {
     const handleVote = () => {
         if (!selectedPlayerId || hasVoted) return;
         
-        socket?.emit('game:vote', { 
-            roomId: room.id, 
-            voteFor: selectedPlayerId 
-        });
+        socket?.emit('vote:cast', { targetId: selectedPlayerId });
         setHasVoted(true);
     };
 
-    const maxTime = room.settings.votingDuration;
-    const timeLeft = room.timer;
-    const progressPercent = Math.min(100, Math.max(0, (timeLeft / maxTime) * 100));
+    // Calculate voting progress
+    const totalVoters = Object.values(room.players).filter(p => p.isAlive).length;
+    const votedCount = Object.keys(room.votes || {}).length;
+    const progressPercent = (votedCount / totalVoters) * 100;
 
     // Sort players: Alive first, then Dead
     const sortedPlayers = Object.values(room.players).sort((a, b) => {
@@ -34,103 +33,120 @@ export function VotingPhase({ room }: VotingPhaseProps) {
     });
 
     return (
-        <div className="flex flex-col h-full w-full max-w-[600px] mx-auto p-4 md:p-6 pb-24 relative">
-             {/* Header / Timer Bar */}
-             <div className="w-full mb-8">
-                <div className="flex justify-between items-end mb-2">
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Voting Session</h2>
-                    <span className="text-primary font-mono text-xl font-bold">{timeLeft}s</span>
-                </div>
-                <div className="h-2 w-full bg-surface-dark rounded-full overflow-hidden border border-white/10">
-                    <div 
-                        className="h-full bg-primary rounded-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(230,55,67,0.5)]" 
-                        style={{ width: `${progressPercent}%` }}
-                    ></div>
-                </div>
-            </div>
+        <div className="flex-grow flex flex-col items-center justify-start py-8 px-4 sm:px-6 bg-background-dark">
+            <div className="w-full max-w-2xl flex flex-col gap-8">
+                {/* Page Heading & Context */}
+                <div className="flex flex-col gap-4 text-center mt-4">
+                    <div className="space-y-2">
+                        <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white drop-shadow-lg">VOTING</h2>
+                        <p className="text-primary font-medium text-lg tracking-wide uppercase">Who should be eliminated?</p>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="w-full max-w-md mx-auto mt-2">
+                        <div className="flex justify-between text-xs font-medium text-text-secondary mb-2 px-1">
+                            <span>Voting Progress</span>
+                            <span>{votedCount}/{totalVoters} Voted</span>
+                        </div>
+                        <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                            <div 
+                                className="h-full bg-gradient-to-r from-primary to-red-600 transition-all duration-500 rounded-full"
+                                style={{width: `${progressPercent}%`}}
+                            ></div>
+                        </div>
+                    </div>
 
-            {/* Players List */}
-            <div className="flex flex-col gap-3 overflow-y-auto pb-4 custom-scrollbar">
-                {sortedPlayers.map(player => {
-                    if (!player.isAlive) {
+                    {/* Timer */}
+                    <div className="mt-4">
+                        <Timer timerEnd={room.timerEnd} duration={room.settings.votingTime} />
+                    </div>
+                </div>
+
+                {/* Players List */}
+                <div className="flex flex-col gap-3 overflow-y-auto pb-24 custom-scrollbar">
+                    {sortedPlayers.map(player => {
+                        if (!player.isAlive) {
+                            return (
+                                <div key={player.id} className="relative opacity-40 grayscale select-none cursor-not-allowed">
+                                    <div className="flex items-center p-4 rounded-xl border border-white/5 bg-black/20">
+                                        <div className="mr-4 flex-shrink-0">
+                                            <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center border border-white/10">
+                                                <span className="material-symbols-outlined text-gray-400 text-2xl">skull</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-grow">
+                                            <p className="font-bold text-lg text-gray-500 line-through decoration-primary decoration-2">{player.username}</p>
+                                            <p className="text-xs text-gray-600 uppercase tracking-wider">Eliminated</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+
+                        const isSelected = selectedPlayerId === player.id;
+                        const isMe = player.id === playerId;
+
                         return (
-                             <div key={player.id} className="relative opacity-50 grayscale select-none cursor-not-allowed">
-                                <div className="flex items-center p-4 rounded-xl border border-white/5 bg-black/20">
+                            <label key={player.id} className="group relative cursor-pointer">
+                                <input 
+                                    type="radio" 
+                                    name="vote" 
+                                    className="peer sr-only" 
+                                    disabled={hasVoted}
+                                    checked={isSelected}
+                                    onChange={() => setSelectedPlayerId(player.id)}
+                                />
+                                <div className={`flex items-center p-5 rounded-2xl border-2 transition-all duration-200 ${
+                                    isSelected 
+                                        ? 'border-primary bg-primary/10 shadow-[0_0_20px_rgba(230,55,67,0.2)]' 
+                                        : 'border-border-dark bg-surface-dark hover:border-primary/30 hover:bg-surface-dark/80'
+                                }`}>
                                     <div className="mr-4 flex-shrink-0">
-                                        <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-white/10">
-                                            <span className="material-symbols-outlined text-gray-400">skull</span>
+                                        <div className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${
+                                            isSelected ? 'bg-primary/20 text-primary border-primary' : 'bg-white/5 text-gray-400 border-white/10 group-hover:border-primary/30'
+                                        }`}>
+                                            <span className="material-symbols-outlined text-3xl">person</span>
                                         </div>
                                     </div>
                                     <div className="flex-grow">
-                                        <p className="font-bold text-base text-gray-500 line-through decoration-primary decoration-2">{player.username}</p>
-                                        <p className="text-xs text-gray-600">Eliminated</p>
+                                        <p className={`font-bold text-lg transition-colors ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                            {player.username} {isMe && '(You)'}
+                                        </p>
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Alive • Eligible</p>
                                     </div>
-                                    <div className="w-5 h-5 flex items-center justify-center text-red-900">
-                                        <span className="material-symbols-outlined text-lg">block</span>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    }
-
-                    const isSelected = selectedPlayerId === player.id;
-                    const isMe = player.id === playerId;
-
-                    return (
-                        <label key={player.id} className={`group relative cursor-pointer ${isMe ? 'opacity-50 pointer-events-none' : ''}`}>
-                            <input 
-                                type="radio" 
-                                name="vote" 
-                                className="peer sr-only" 
-                                disabled={isMe || hasVoted}
-                                checked={isSelected}
-                                onChange={() => setSelectedPlayerId(player.id)}
-                            />
-                            <div className={`flex items-center p-4 rounded-xl border transition-all duration-200 ${
-                                isSelected 
-                                ? 'border-primary bg-primary/10' 
-                                : 'border-white/10 bg-surface-dark hover:border-primary/50 hover:bg-surface-dark/80 active:scale-[0.99]'
-                            }`}>
-                                <div className="mr-4 flex-shrink-0">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border ${
-                                        isSelected ? 'bg-primary/20 text-primary border-primary/30' : 'bg-white/5 text-gray-400 border-white/10'
+                                    {/* Radio indicator */}
+                                    <div className={`w-6 h-6 rounded-full border-3 transition-all flex items-center justify-center ${
+                                        isSelected ? 'border-primary bg-primary' : 'border-gray-600 group-hover:border-primary/50'
                                     }`}>
-                                        <span className="material-symbols-outlined">person</span>
+                                        {isSelected && (
+                                            <span className="material-symbols-outlined text-white text-sm" style={{fontVariationSettings: "'FILL' 1"}}>check</span>
+                                        )}
                                     </div>
                                 </div>
-                                <div className="flex-grow">
-                                    <p className={`font-bold text-base transition-colors ${isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
-                                        {player.username} {isMe && '(You)'}
-                                    </p>
-                                    <p className="text-xs text-gray-500">Alive</p>
-                                </div>
-                                <div className={`w-5 h-5 rounded-full border-2 transition-colors flex items-center justify-center ${
-                                    isSelected ? 'border-primary' : 'border-gray-600'
-                                }`}>
-                                    {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary"></div>}
-                                </div>
-                            </div>
-                        </label>
-                    );
-                })}
-            </div>
+                            </label>
+                        );
+                    })}
+                </div>
 
-            {/* Action Button */}
-            <div className="fixed bottom-6 left-0 right-0 px-4 md:px-0 w-full max-w-[600px] mx-auto z-40">
-                 <button 
-                    disabled={!selectedPlayerId || hasVoted}
-                    onClick={handleVote}
-                    className="w-full relative group overflow-hidden rounded-xl bg-primary disabled:bg-gray-700 disabled:cursor-not-allowed hover:bg-red-600 transition-colors duration-300 h-14 shadow-[0_0_20px_rgba(230,55,67,0.3)] disabled:shadow-none"
-                >
-                    {!hasVoted && <div className="absolute inset-0 w-full h-full bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] bg-[length:250%_250%] group-hover:animate-[shimmer_2s_infinite]"></div>}
-                    <span className="relative flex items-center justify-center gap-2 font-black text-white tracking-widest text-lg uppercase">
-                        <span className="material-symbols-outlined">how_to_vote</span>
-                        {hasVoted ? 'Vote Cast' : 'Confirm Vote'}
-                    </span>
-                </button>
-                {hasVoted && (
-                    <p className="text-center text-xs text-gray-500 mt-3 animate-pulse">Waiting for other players...</p>
-                )}
+                {/* Action Button */}
+                <div className="fixed bottom-6 left-0 right-0 px-4 md:px-0 w-full max-w-2xl mx-auto z-40">
+                    <button 
+                        disabled={!selectedPlayerId || hasVoted}
+                        onClick={handleVote}
+                        className="w-full relative group overflow-hidden rounded-xl bg-primary disabled:bg-gray-700 disabled:cursor-not-allowed hover:bg-red-600 transition-colors duration-300 h-16 shadow-[0_0_30px_rgba(230,55,67,0.4)] disabled:shadow-none"
+                    >
+                        {!hasVoted && (
+                            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[100%] group-hover:animate-shimmer"></div>
+                        )}
+                        <span className="relative flex items-center justify-center gap-3 font-black text-white tracking-widest text-lg uppercase">
+                            <span className="material-symbols-outlined text-2xl">how_to_vote</span>
+                            {hasVoted ? 'Vote Cast' : 'Cast Vote'}
+                        </span>
+                    </button>
+                    {hasVoted && (
+                        <p className="text-center text-sm text-gray-400 mt-3 animate-pulse">Waiting for other players to vote...</p>
+                    )}
+                </div>
             </div>
         </div>
     );

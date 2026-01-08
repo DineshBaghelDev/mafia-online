@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useGame } from '@/context/GameContext';
+import { showToast } from '@/components/ui/Toast';
 
 export default function CreateGamePage() {
     const router = useRouter();
-    const { socket, username, setUsername } = useGame();
+    const { socket, username, setUsername, leaveRoom } = useGame();
 
     useEffect(() => {
         // Redirect to username if not set
@@ -25,29 +26,51 @@ export default function CreateGamePage() {
     const [votingTime, setVotingTime] = useState(60);
     const [confirmEjects, setConfirmEjects] = useState(true);
     const [anonymousVotes, setAnonymousVotes] = useState(false);
+    const [isPublic, setIsPublic] = useState(true);
+    const [isCreating, setIsCreating] = useState(false);
 
     const handleCreate = () => {
-        if (!socket) return;
-        // Emitting create room event with settings
-        socket.emit('room:create', { 
-            username,
-            settings: {
-                mafiaCount,
-                doctorCount,
-                discussionTime,
-                votingTime,
-                confirmEjects,
-                anonymousVotes
-            }
-        });
+        if (!socket || !socket.connected) {
+            showToast('Not connected to server. Please refresh the page.', 'error');
+            return;
+        }
         
-        // Listen for creation success in context or here
-        socket.once('room:created', (data: { code: string }) => {
-            router.push(`/lobby/${data.code}`);
-        });
-
-        // Fallback for demo if no socket backend running
-        // setTimeout(() => router.push(`/lobby/TEST`), 500);
+        if (isCreating) {
+            return; // Prevent double-click
+        }
+        
+        setIsCreating(true);
+        console.log('Creating room with username:', username);
+        
+        // Leave any existing room first
+        leaveRoom();
+        
+        // Small delay to ensure leave is processed
+        setTimeout(() => {
+            // Emitting create room event with settings
+            socket.emit('room:create', { 
+                username,
+                isPublic: isPublic,
+                maxPlayers: 10,
+                settings: {
+                    discussionTime,
+                    votingTime,
+                    nightTime: 30 // Fixed for now
+                }
+            });
+            
+            // Listen for room joined (server responds with room:joined)
+            socket.once('room:joined', (data: { roomId: string; roomCode: string; playerId: string }) => {
+                console.log('Room created, joining lobby:', data);
+                showToast('Lobby created!', 'success');
+                router.push(`/lobby/${data.roomCode}`);
+            });
+            
+            // Timeout fallback
+            setTimeout(() => {
+                setIsCreating(false);
+            }, 3000);
+        }, 100);
     };
 
     return (
@@ -193,6 +216,18 @@ export default function CreateGamePage() {
                         <h2 className="text-xs font-bold text-primary tracking-[0.2em] uppercase mb-5 ml-1">Gameplay Rules</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div 
+                                onClick={() => setIsPublic(!isPublic)}
+                                className="bg-[#161B22] p-5 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-colors"
+                            >
+                                <div className="pr-4">
+                                    <h3 className="font-bold text-sm text-white mb-1">Public Lobby</h3>
+                                    <p className="text-xs text-[#8B949E] leading-snug">Visible to all players.</p>
+                                </div>
+                                <div className={`relative w-12 h-7 rounded-full transition-colors flex items-center px-1 ${isPublic ? 'bg-primary' : 'bg-[#1C2128] border border-white/10'}`}>
+                                    <div className={`w-5 h-5 rounded-full shadow-sm transform transition-transform ${isPublic ? 'translate-x-5 bg-white' : 'translate-x-0 bg-[#8B949E]/50'}`}></div>
+                                </div>
+                            </div>
+                            <div 
                                 onClick={() => setConfirmEjects(!confirmEjects)}
                                 className="bg-[#161B22] p-5 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:border-white/20 transition-colors"
                             >
@@ -223,10 +258,20 @@ export default function CreateGamePage() {
                 <footer className="p-8 border-t border-white/5 bg-[#161B22]/95 backdrop-blur-sm z-20 flex-shrink-0">
                     <button 
                         onClick={handleCreate}
-                        className="group w-full h-14 bg-primary hover:bg-[#D02835] text-white rounded-xl font-bold text-lg shadow-[0_4px_20px_rgba(230,57,70,0.3)] hover:shadow-[0_4px_25px_rgba(230,57,70,0.5)] transition-all active:scale-[0.99] flex items-center justify-center gap-3"
+                        disabled={isCreating}
+                        className={`group w-full h-14 ${isCreating ? 'bg-gray-600 cursor-not-allowed' : 'bg-primary hover:bg-[#D02835]'} text-white rounded-xl font-bold text-lg shadow-[0_4px_20px_rgba(230,57,70,0.3)] hover:shadow-[0_4px_25px_rgba(230,57,70,0.5)] transition-all active:scale-[0.99] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-gray-600`}
                     >
-                        <span>SAVE & CREATE</span>
-                        <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                        {isCreating ? (
+                            <>
+                                <span className="animate-spin material-symbols-outlined">progress_activity</span>
+                                <span>CREATING...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>CREATE LOBBY</span>
+                                <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </>
+                        )}
                     </button>
                     <button className="w-full mt-4 text-sm text-[#8B949E] hover:text-white font-medium transition-colors">
                         Reset to Defaults

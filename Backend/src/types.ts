@@ -1,5 +1,5 @@
 export type Role = 'mafia' | 'detective' | 'doctor' | 'villager';
-export type Phase = 'lobby' | 'roleReveal' | 'night' | 'day' | 'voting' | 'ended';
+export type Phase = 'lobby' | 'role_reveal' | 'night' | 'day' | 'voting' | 'game_end';
 export type Winner = 'mafia' | 'villagers';
 
 export interface Player {

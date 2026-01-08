@@ -9,6 +9,9 @@ const userSessions = new Map<string, string>(); // socketId -> userId
 const socketToRoom = new Map<string, string>(); // socketId -> roomId
 
 export const setupSockets = (io: Server) => {
+    // Connect matchmaking service to io
+    matchmakingService.setIoServer(io);
+    
     io.on('connection', (socket: Socket) => {
         console.log(`Socket connected: ${socket.id}`);
 
@@ -67,12 +70,26 @@ export const setupSockets = (io: Server) => {
             }
         });
 
+        socket.on('matchmaking:getPublicRooms', async () => {
+            try {
+                const publicRooms = await store.getPublicRooms();
+                socket.emit('matchmaking:publicRooms', { rooms: publicRooms });
+            } catch (error: any) {
+                socket.emit('room:error', { reason: error.message });
+            }
+        });
+
         // ===== ROOM / LOBBY =====
         
         socket.on('room:create', async (data: { 
             username: string; 
             isPublic?: boolean; 
-            maxPlayers?: number 
+            maxPlayers?: number;
+            settings?: {
+                discussionTime?: number;
+                votingTime?: number;
+                nightTime?: number;
+            }
         }) => {
             try {
                 const userId = userSessions.get(socket.id) || socket.id;
@@ -80,7 +97,8 @@ export const setupSockets = (io: Server) => {
                     userId, 
                     data.username, 
                     data.isPublic || false,
-                    data.maxPlayers || 10
+                    data.maxPlayers || 10,
+                    data.settings
                 );
                 
                 socket.join(room.id);
@@ -146,6 +164,18 @@ export const setupSockets = (io: Server) => {
                 if (!roomId) throw new Error('Not in a room');
                 
                 const room = await gameService.setReady(roomId, userId, data.ready);
+                io.to(roomId).emit('room:update', room);
+            } catch (error: any) {
+                socket.emit('room:error', { reason: error.message });
+            }
+        });
+
+        socket.on('room:reset', async () => {
+            try {
+                const roomId = socketToRoom.get(socket.id);
+                if (!roomId) throw new Error('Not in a room');
+                
+                const room = await gameService.resetRoomToLobby(roomId);
                 io.to(roomId).emit('room:update', room);
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
@@ -303,7 +333,7 @@ export const setupSockets = (io: Server) => {
 
         // ===== CHAT =====
         
-        socket.on('chat:send', async (data: { message: string; isPrivate?: boolean }) => {
+        socket.on('chat:send', async (data: { message: string; isPrivate?: boolean; isGhost?: boolean }) => {
             try {
                 const userId = userSessions.get(socket.id) || socket.id;
                 const roomId = socketToRoom.get(socket.id);
@@ -317,22 +347,88 @@ export const setupSockets = (io: Server) => {
                     data.isPrivate || false
                 );
                 
-                const latestMessage = room.chatHistory[room.chatHistory.length - 1];
+                const sender = room.players[userId];
+                if (!sender) throw new Error('Player not found');
                 
-                if (data.isPrivate) {
+                const messageData = {
+                    senderId: userId,
+                    senderName: sender.username,
+                    message: data.message,
+                    timestamp: Date.now(),
+                    isGhost: data.isGhost || false
+                };
+                
+                if (data.isGhost) {
+                    // Ghost chat: only send to dead players
+                    Object.entries(room.players).forEach(([playerId, player]) => {
+                        if (!player.isAlive) {
+                            const playerSocket = Array.from(io.sockets.sockets.values())
+                                .find(s => userSessions.get(s.id) === playerId);
+                            if (playerSocket) {
+                                playerSocket.emit('chat:message', messageData);
+                            }
+                        }
+                    });
+                } else if (data.isPrivate) {
                     // Send only to mafia members
                     Object.entries(room.players).forEach(([playerId, player]) => {
                         if (player.role === 'mafia') {
                             const playerSocket = Array.from(io.sockets.sockets.values())
                                 .find(s => userSessions.get(s.id) === playerId);
                             if (playerSocket) {
-                                playerSocket.emit('chat:message', latestMessage);
+                                playerSocket.emit('chat:message', messageData);
                             }
                         }
                     });
                 } else {
-                    io.to(roomId).emit('chat:message', latestMessage);
+                    // Public chat: send to alive players only
+                    Object.entries(room.players).forEach(([playerId, player]) => {
+                        if (player.isAlive) {
+                            const playerSocket = Array.from(io.sockets.sockets.values())
+                                .find(s => userSessions.get(s.id) === playerId);
+                            if (playerSocket) {
+                                playerSocket.emit('chat:message', messageData);
+                            }
+                        }
+                    });
                 }
+            } catch (error: any) {
+                socket.emit('room:error', { reason: error.message });
+            }
+        });
+
+        // ===== MAFIA PRIVATE CHAT =====
+        
+        socket.on('mafia:message', async (data: { message: string }) => {
+            try {
+                const userId = userSessions.get(socket.id) || socket.id;
+                const roomId = socketToRoom.get(socket.id);
+                
+                if (!roomId) throw new Error('Not in a room');
+                
+                const room = await gameService.getRoom(roomId);
+                if (!room) throw new Error('Room not found');
+                
+                const sender = room.players[userId];
+                if (!sender || sender.role !== 'mafia') {
+                    throw new Error('Only Mafia can use this chat');
+                }
+                
+                // Broadcast to all mafia members
+                Object.entries(room.players).forEach(([playerId, player]) => {
+                    if (player.role === 'mafia') {
+                        const playerSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (playerSocket) {
+                            playerSocket.emit('mafia:message', {
+                                senderId: userId,
+                                senderName: sender.username,
+                                message: data.message,
+                                timestamp: Date.now()
+                            });
+                        }
+                    }
+                });
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
             }
@@ -444,7 +540,7 @@ export const setupSockets = (io: Server) => {
         
         io.to(roomId).emit('room:update', room);
         
-        if (room.phase !== 'ended') {
+        if (room.phase !== 'game_end') {
             io.to(roomId).emit('game:phase', { 
                 phase: 'day',
                 duration: room.settings.discussionTime
@@ -483,7 +579,7 @@ export const setupSockets = (io: Server) => {
         
         io.to(roomId).emit('room:update', room);
         
-        if (room.phase === 'ended') {
+        if (room.phase === 'game_end') {
             io.to(roomId).emit('game:end', {
                 winner: room.winner,
                 players: room.players

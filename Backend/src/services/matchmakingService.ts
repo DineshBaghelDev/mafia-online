@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Server } from 'socket.io';
 import { store } from './store';
 import { gameService } from './gameService';
 import { MatchmakingPlayer, RoomState } from '../types';
@@ -8,9 +9,14 @@ export class MatchmakingService {
     private readonly MIN_PLAYERS = 6;
     private readonly MAX_WAIT_TIME = 30000; // 30 seconds
     private readonly CHECK_INTERVAL = 2000; // Check every 2 seconds
+    private io: Server | null = null;
 
     constructor() {
         this.startMatchmaking();
+    }
+
+    setIoServer(io: Server): void {
+        this.io = io;
     }
 
     async addToQueue(userId: string, username: string): Promise<void> {
@@ -93,6 +99,13 @@ export class MatchmakingService {
         await store.clearMatchmakingQueue(playersToMatch.length);
 
         console.log(`Created matchmade game ${room.code} with ${playersToMatch.length} players`);
+
+        // Notify all matched players
+        if (this.io) {
+            playersToMatch.forEach(player => {
+                this.io!.emit('matchmaking:found', { roomId: room.id, roomCode: room.code });
+            });
+        }
 
         // Auto-start game after 5 seconds to give players time to load
         setTimeout(async () => {

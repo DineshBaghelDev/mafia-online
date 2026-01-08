@@ -28,9 +28,9 @@ export default function LandingPage() {
             MAF
             <span className="relative text-primary flex items-center justify-center h-full">
               I
-              {/* Stylized Knife overlaying the I */}
-              <span className="material-symbols-outlined absolute -top-2 left-1/2 -translate-x-1/2 text-5xl md:text-7xl rotate-180 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none text-white drop-shadow-[0_0_8px_rgba(230,55,67,0.8)]">
-                restaurant
+              {/* Stylized Skull overlaying the I */}
+              <span className="material-symbols-outlined absolute -top-2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-7xl opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-300 pointer-events-none text-primary drop-shadow-[0_0_12px_rgba(230,55,67,0.9)]">
+                skull
               </span>
             </span>
             A
@@ -49,7 +49,7 @@ export default function LandingPage() {
       <div className="w-full max-w-[420px] flex flex-col gap-4 z-20">
         {/* Primary Action: Play Public */}
         <button
-          onClick={() => router.push('/username?next=/matchmaking')}
+          onClick={() => router.push('/username?next=/public-lobbies')}
           className="group relative w-full h-14 md:h-16 bg-primary hover:bg-[#ff4d5a] text-white rounded-xl font-bold text-lg tracking-wide transition-all duration-300 transform hover:-translate-y-1 shadow-[0_4px_0_rgb(160,20,30)] hover:shadow-[0_6px_0_rgb(160,20,30),0_0_20px_rgba(230,55,67,0.5)] active:translate-y-[2px] active:shadow-[0_2px_0_rgb(160,20,30)] flex items-center justify-between px-6 overflow-hidden font-display"
         >
           <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[100%] group-hover:animate-shimmer"></div>

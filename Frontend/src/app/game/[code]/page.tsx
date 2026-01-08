@@ -10,21 +10,9 @@ import { NightPhase } from '@/components/game/NightPhase';
 import { VotingPhase } from '@/components/game/VotingPhase';
 import { GameEndPhase } from '@/components/game/GameEndPhase';
 import { RoomState } from '@/types';
+import { showToast } from '@/components/ui/Toast';
 
-// Mock Room Data for Development/Preview
-const MOCK_ROOM_STATE: RoomState = {
-    id: "123",
-    code: "TESTCODE",
-    phase: "lobby", // Will change
-    players: {},
-    settings: {
-        maxPlayers: 10,
-        dayDuration: 90,
-        nightDuration: 30,
-        votingDuration: 60
-    },
-    timer: 90
-};
+// No mock needed - we'll use real socket data
 
 export default function GamePage() {
     const params = useParams();
@@ -37,36 +25,63 @@ export default function GamePage() {
     const me = (room && playerId) ? room.players[playerId] : undefined;
 
     useEffect(() => {
-        // In a real app, we would fetch initial state via socket or API
-        // For now, we simulate connection or use socket if available
-        if (socket) {
-            socket.emit('room:join', { code, username });
-            
-            socket.on('room:update', (updatedRoom: RoomState) => {
-                setRoom(updatedRoom);
-                setLoading(false);
-            });
-
-            socket.on('error', (err: any) => {
-                console.error("Game Room Error:", err);
-                // Optionally redirect home
-            });
-            
-            // Allow manual role reveal testing via query params or similar if needed
-        } else {
-            // Fallback for UI development without partial backend
-            // Mocking a room state after a delay
-            setTimeout(() => {
-                setRoom({ ...MOCK_ROOM_STATE, code: code.toUpperCase() });
-                setLoading(false);
-            }, 1000);
+        if (!socket || !username) {
+            router.push(`/username?next=/game/${code}`);
+            return;
         }
 
+        // Listen for room updates
+        socket.on('room:update', (updatedRoom: RoomState) => {
+            setRoom(updatedRoom);
+            setLoading(false);
+        });
+
+        // Listen for role assignment (private to this player)
+        socket.on('game:role', (data: { role: string }) => {
+            console.log('Received role:', data.role);
+            if (room) {
+                setRoom(prev => prev ? {
+                    ...prev,
+                    players: {
+                        ...prev.players,
+                        [playerId!]: {
+                            ...prev.players[playerId!],
+                            role: data.role as any
+                        }
+                    }
+                } : null);
+            }
+        });
+
+        // Listen for phase changes
+        socket.on('game:phase', (data: { phase: string; duration: number }) => {
+            console.log('Phase changed to:', data.phase);
+        });
+
+        // Listen for game end
+        socket.on('game:end', (data: any) => {
+            console.log('Game ended:', data);
+            if (room) {
+                setRoom(prev => prev ? { ...prev, phase: 'game_end', winner: data.winner } : null);
+            }
+        });
+
+        socket.on('room:error', (err: { reason: string }) => {
+            console.error('Game error:', err);
+            showToast(err.reason, 'error');
+        });
+
+        // Request current game state
+        socket.emit('game:getState');
+
         return () => {
-             socket?.off('room:update');
-             socket?.off('error');
+            socket.off('room:update');
+            socket.off('game:role');
+            socket.off('game:phase');
+            socket.off('game:end');
+            socket.off('room:error');
         };
-    }, [socket, code, username]);
+    }, [socket, code, username, router, playerId, room]);
 
     // Simple Render Logic based on Phase
     const renderPhase = () => {
@@ -84,15 +99,8 @@ export default function GamePage() {
             case 'game_end':
                 return <GameEndPhase room={room} />;
             case 'lobby':
-                 // If we are in lobby but on game page, maybe redirect back to lobby or show waiting
-                 // But typically game page handles the running game.
-                 // For now, redirect to lobby view if phase is lobby
-                 return (
-                    <div className="flex items-center justify-center h-[60vh] flex-col gap-4">
-                        <p>Game hasn't started yet.</p>
-                        <button onClick={() => router.push(`/lobby/${code}`)} className="text-primary underline">Return to Lobby</button>
-                    </div>
-                 );
+                router.push(`/lobby/${code}`);
+                return null;
             default:
                 return (
                      <div className="flex items-center justify-center h-[60vh] flex-col gap-4">
