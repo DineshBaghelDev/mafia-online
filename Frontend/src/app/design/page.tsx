@@ -63,7 +63,7 @@ export default function DesignPreviewPage() {
 
         switch (selectedPhase) {
             case 'role_reveal':
-                return <RoleRevealPhase room={room} role={me?.role || 'villager'} />;
+                return <RoleRevealPhase role={me?.role || 'villager'} />;
             case 'day':
                 return <DayPhase room={room} inspectResult={null} investigationHistory={new Map()} chatMessages={[]} setChatMessages={() => {}} />;
             case 'voting':
