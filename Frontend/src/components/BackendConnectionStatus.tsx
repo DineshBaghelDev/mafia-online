@@ -64,7 +64,7 @@ export function BackendConnectionStatus({
         {/* Explanation */}
         <div className="text-sm text-gray-400 bg-gray-800/50 rounded p-3 mt-4">
           <p className="mb-2">
-            The server is starting up (free tier cold start).
+            The server is starting up.
           </p>
           <p className="text-xs text-gray-500">
             This usually takes 30-60 seconds on first visit.
