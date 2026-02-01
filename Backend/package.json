@@ -4,7 +4,7 @@
   "description": "Mafia Game Backend",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "node dist/index.js",
     "dev": "nodemon",
     "build": "tsc",
     "check:redis": "node scripts/check-redis.js",
@@ -18,12 +18,12 @@
     "fastify-socket.io": "^5.0.0",
     "ioredis": "^5.3.2",
     "socket.io": "^4.7.5",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.28",
-    "nodemon": "^3.1.0",
-    "ts-node": "^10.9.2"
+    "nodemon": "^3.1.0"
   }
 }
