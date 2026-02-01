@@ -10,20 +10,27 @@ declare module 'fastify' {
   }
 }
 dotenv.config();
+
+// Normalize CORS origin by removing trailing slash
+const corsOrigin = (process.env.CORS_ORIGIN || "*").replace(/\/$/, '');
+
 const fastify = Fastify({
   logger: process.env.NODE_ENV === 'production' ? false : true
 });
+
 fastify.register(cors, {
-  origin: process.env.CORS_ORIGIN || "*",
+  origin: corsOrigin,
   credentials: true
 });
+
 fastify.register(socketioServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: corsOrigin,
     methods: ["GET", "POST"],
     credentials: true
   }
 });
+
 // Health check endpoint
 fastify.get('/health', async (request, reply) => {
   return { 
