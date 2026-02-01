@@ -13,8 +13,6 @@ export const setupSockets = (io: Server) => {
     matchmakingService.setIoServer(io);
     
     io.on('connection', (socket: Socket) => {
-        console.log(`Socket connected: ${socket.id}`);
-        
         // Use socket.id as userId - no authentication required
         userSessions.set(socket.id, socket.id);
 
@@ -544,8 +542,6 @@ export const setupSockets = (io: Server) => {
         // ===== DISCONNECT =====
         
         socket.on('disconnect', async () => {
-            console.log(`Socket disconnected: ${socket.id}`);
-            
             try {
                 const userId = socket.id;
                 const roomId = socketToRoom.get(socket.id);
@@ -561,7 +557,7 @@ export const setupSockets = (io: Server) => {
                 userSessions.delete(socket.id);
                 socketToRoom.delete(socket.id);
             } catch (error) {
-                console.error('Error handling disconnect:', error);
+                // Silently handle disconnect errors
             }
         });
 

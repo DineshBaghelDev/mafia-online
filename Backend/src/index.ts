@@ -11,7 +11,7 @@ declare module 'fastify' {
 }
 dotenv.config();
 const fastify = Fastify({
-  logger: true
+  logger: process.env.NODE_ENV === 'production' ? false : true
 });
 fastify.register(cors, {
   origin: process.env.CORS_ORIGIN || "*",

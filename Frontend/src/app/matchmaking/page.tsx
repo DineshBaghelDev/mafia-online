@@ -29,7 +29,6 @@ export default function MatchmakingPage() {
 
         // Listen for game found
         socket.on('matchmaking:found', (data: { roomId: string; roomCode: string }) => {
-            console.log('Game found:', data);
             router.push(`/lobby/${data.roomCode}`);
         });
 

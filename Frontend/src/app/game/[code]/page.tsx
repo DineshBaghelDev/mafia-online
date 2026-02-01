@@ -52,7 +52,6 @@ export default function GamePage() {
 
         // Listen for role assignment (private to this player)
         socket.on('game:role', (data: { role: string }) => {
-            console.log('Received role:', data.role);
             if (room) {
                 setRoom(prev => prev ? {
                     ...prev,
@@ -69,12 +68,10 @@ export default function GamePage() {
 
         // Listen for phase changes
         socket.on('game:phase', (data: { phase: string; duration: number }) => {
-            console.log('Phase changed to:', data.phase);
         });
 
         // Listen for game end
         socket.on('game:end', (data: any) => {
-            console.log('Game ended:', data);
             if (room) {
                 setRoom(prev => prev ? { ...prev, phase: 'game_end', winner: data.winner } : null);
             }
@@ -82,7 +79,6 @@ export default function GamePage() {
 
         // Listen for detective inspect result
         socket.on('action:result', (data: { inspectResult?: {targetId: string, isMafia: boolean} }) => {
-            console.log('Action result received:', data);
             if (data.inspectResult) {
                 setInspectResult(data.inspectResult);
                 // Add to investigation history
@@ -95,7 +91,6 @@ export default function GamePage() {
         });
 
         socket.on('room:error', (err: { reason: string }) => {
-            console.error('Game error:', err);
             showToast(err.reason, 'error');
         });
 

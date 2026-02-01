@@ -113,10 +113,9 @@ export class MatchmakingService {
                 const currentRoom = await store.getRoom(room.id);
                 if (currentRoom && currentRoom.phase === 'lobby') {
                     await gameService.startGame(room.id, host.userId);
-                    console.log(`Auto-started matchmade game ${room.code}`);
                 }
             } catch (error) {
-                console.error('Failed to auto-start matchmade game:', error);
+                // Failed to auto-start matchmade game
             }
         }, 5000);
 
@@ -138,7 +137,6 @@ export class MatchmakingService {
         if (this.matchmakingInterval) {
             clearInterval(this.matchmakingInterval);
             this.matchmakingInterval = null;
-            console.log('Matchmaking service stopped');
         }
     }
 }

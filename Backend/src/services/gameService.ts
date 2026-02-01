@@ -71,7 +71,6 @@ export class GameService {
         
         // If player is already in THIS room, just return success (e.g., rejoin after create)
         if (room.players[userId]) {
-            console.log(`Player ${userId} already in room ${room.id}, returning room state`);
             return room;
         }
         
@@ -625,7 +624,7 @@ export class GameService {
             try {
                 await callback();
             } catch (error) {
-                console.error(`Error in phase transition for room ${roomId}:`, error);
+                // Handle error silently
             }
         }, delay);
         

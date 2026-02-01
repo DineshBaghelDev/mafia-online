@@ -1,66 +1,78 @@
 # Mafia Game Backend
 
-Real-time multiplayer Mafia game server built with Fastify and Socket.IO.
+Production-ready real-time multiplayer Mafia game server built with Fastify and Socket.IO.
 
 ## Features
 
 - ✅ Real-time WebSocket communication
 - ✅ Room-based game isolation
-- ✅ Redis for live state (with in-memory fallback)
-- ✅ PostgreSQL schemas for future persistence
+- ✅ Redis for state management (with in-memory fallback)
+- ✅ PostgreSQL schemas ready for persistence
 - ✅ Public matchmaking system
 - ✅ Private and public lobbies
 - ✅ Complete game state machine
-- ✅ Role-based night actions
+- ✅ Role-based night actions (Mafia, Detective, Doctor)
 - ✅ Voting system with tie resolution
-- ✅ Chat system (public & mafia private)
+- ✅ Chat system (public, private, ghost)
 - ✅ Player reconnection support
 - ✅ Host migration on disconnect
+- ✅ Production-ready logging
+- ✅ CORS configuration
+- ✅ Graceful shutdown
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - Redis (optional - will fallback to in-memory)
 - PostgreSQL (optional - for future persistence)
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
 cd Backend
 npm install
 ```
 
-## Configuration
+### Configuration
 
-Copy `.env.example` to `.env` and configure:
+Create a `.env` file (copy from `.env.example`):
 
 ```env
 PORT=3001
 NODE_ENV=development
-
-# Redis (optional)
+CORS_ORIGIN=http://localhost:3000
 REDIS_HOST=localhost
 REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# PostgreSQL (for future use)
-DATABASE_URL=postgresql://user:password@localhost:5432/mafia_db
-
-# CORS
-CORS_ORIGIN=http://localhost:3000
 ```
 
-## Running
+### Running
 
-### Development
+**Development:**
 ```bash
 npm run dev
 ```
 
-### Production
+**Production:**
 ```bash
 npm run build
 npm start
+```
+
+### Health Check
+
+```bash
+curl http://localhost:3001/health
+```
+
+Response:
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "uptime": 123.456
+}
 ```
 
 ## Socket Events
