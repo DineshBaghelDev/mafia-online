@@ -425,14 +425,12 @@ export const setupSockets = (io: Server) => {
                         }
                     });
                 } else {
-                    // Public chat: send to alive players only
+                    // Public chat: send to alive players AND dead players (ghosts can see all chat)
                     Object.entries(room.players).forEach(([playerId, player]) => {
-                        if (player.isAlive) {
-                            const playerSocket = Array.from(io.sockets.sockets.values())
-                                .find(s => userSessions.get(s.id) === playerId);
-                            if (playerSocket) {
-                                playerSocket.emit('chat:message', messageData);
-                            }
+                        const playerSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (playerSocket) {
+                            playerSocket.emit('chat:message', messageData);
                         }
                     });
                 }
