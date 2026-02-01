@@ -1,18 +1,56 @@
 'use client';
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { useGame } from "@/context/GameContext";
 
 export default function LandingPage() {
   const router = useRouter();
+  const { user, isAuthenticated, logout } = useAuth();
+  const { socket, username } = useGame();
   const [joinCode, setJoinCode] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleJoin = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (joinCode.length >= 4) {
       router.push(`/username?next=/lobby/${joinCode.toUpperCase()}`);
     }
+  };
+
+  const handleCreateLobby = () => {
+    if (!username) {
+      router.push('/username?next=/');
+      return;
+    }
+
+    if (!socket || !socket.connected) {
+      alert('Not connected to server. Please refresh the page.');
+      return;
+    }
+    
+    if (isCreating) return;
+    
+    setIsCreating(true);
+    
+    // Create private room (can be changed to public in settings)
+    socket.emit('room:create', { 
+      username,
+      isPublic: false,
+      maxPlayers: 10
+    });
+    
+    // Listen for room joined
+    socket.once('room:joined', (data: { roomId: string; roomCode: string; playerId: string }) => {
+      router.push(`/lobby/${data.roomCode}`);
+    });
+    
+    // Timeout fallback
+    setTimeout(() => {
+      setIsCreating(false);
+    }, 3000);
   };
 
   return (
@@ -60,19 +98,24 @@ export default function LandingPage() {
           <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </button>
 
-        {/* Secondary Action: Create Private */}
+        {/* Secondary Action: Create Lobby */}
         <button
-          onClick={() => router.push('/username?next=/create')}
-          className="group w-full h-14 md:h-16 bg-[#1a1d24] hover:bg-[#252932] border border-white/5 hover:border-white/10 text-gray-200 rounded-xl font-bold text-lg tracking-wide transition-all duration-200 flex items-center justify-between px-6 hover:shadow-lg font-display"
+          onClick={handleCreateLobby}
+          disabled={isCreating}
+          className="group w-full h-14 md:h-16 bg-[#1a1d24] hover:bg-[#252932] border border-white/5 hover:border-white/10 text-gray-200 rounded-xl font-bold text-lg tracking-wide transition-all duration-200 flex items-center justify-between px-6 hover:shadow-lg font-display disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">add_box</span>
-            CREATE PRIVATE LOBBY
+            {isCreating ? (
+              <span className="material-symbols-outlined text-gray-400 animate-spin">progress_activity</span>
+            ) : (
+              <span className="material-symbols-outlined text-gray-400 group-hover:text-primary transition-colors">add_box</span>
+            )}
+            {isCreating ? 'CREATING...' : 'CREATE LOBBY'}
           </span>
-          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity text-gray-400">chevron_right</span>
+          <span className="material-symbols-outlined opacity-0 group-hover:opacity-100 transition-opacity text-gray-400">{isCreating ? '' : 'chevron_right'}</span>
         </button>
 
-        {/* Tertiary Action: Join with Code */}
+        {/* Tertiary Action: Enter Code */}
         <div className="relative group w-full font-display">
           <form onSubmit={handleJoin} className="flex w-full h-14 md:h-16 bg-[#1a1d24] border border-white/5 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary/50 transition-all duration-200">
             <div className="pl-5 pr-2 flex items-center justify-center text-gray-500">
@@ -110,7 +153,7 @@ export default function LandingPage() {
           </a>
         </div>
         <div className="mt-4 text-xs text-gray-800 dark:text-gray-800">
-          v2.4.1 © 2023 Mafia Game
+          v2.4.1 © 2026 Mafia Game
         </div>
       </footer>
 

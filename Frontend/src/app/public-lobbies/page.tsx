@@ -42,10 +42,6 @@ export default function PublicLobbiesPage() {
         router.push(`/lobby/${code}`);
     };
 
-    const handleCreateNew = () => {
-        router.push('/create');
-    };
-
     return (
         <div className="bg-background-dark text-white min-h-screen flex flex-col font-display">
             {/* Back Button */}
@@ -66,17 +62,8 @@ export default function PublicLobbiesPage() {
                             <span className="material-symbols-outlined text-primary text-5xl md:text-6xl">skull</span>
                             Public Lobbies
                         </h1>
-                        <p className="text-gray-400 text-lg">Join an existing game or create your own</p>
+                        <p className="text-gray-400 text-lg">Join an existing public game</p>
                     </div>
-
-                    {/* Create New Button */}
-                    <button
-                        onClick={handleCreateNew}
-                        className="w-full h-14 bg-primary hover:bg-[#ff4d5a] text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-                    >
-                        <span className="material-symbols-outlined">add_circle</span>
-                        Create New Lobby
-                    </button>
 
                     {/* Lobbies List */}
                     <div className="flex flex-col gap-4">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import { GameProvider } from "@/context/GameContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { ToastContainer } from "@/components/ui/Toast";
 
 const manrope = Manrope({ subsets: ["latin"] });
@@ -22,10 +23,12 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
       </head>
       <body className={`${manrope.className} bg-background-light dark:bg-background-dark text-slate-50`}>
-        <GameProvider>
-          {children}
-          <ToastContainer />
-        </GameProvider>
+        <AuthProvider>
+          <GameProvider>
+            {children}
+            <ToastContainer />
+          </GameProvider>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { useGame } from '@/context/GameContext';
+import { useAuth } from '@/context/AuthContext';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { GameHeader } from '@/components/game/GameHeader';
@@ -8,7 +9,9 @@ import { RoleRevealPhase } from '@/components/game/RoleRevealPhase';
 import { DayPhase } from '@/components/game/DayPhase';
 import { NightPhase } from '@/components/game/NightPhase';
 import { VotingPhase } from '@/components/game/VotingPhase';
+import { EliminationResultPhase } from '@/components/game/EliminationResultPhase';
 import { GameEndPhase } from '@/components/game/GameEndPhase';
+import { Timer } from '@/components/game/Timer';
 import { RoomState } from '@/types';
 import { showToast } from '@/components/ui/Toast';
 
@@ -18,13 +21,19 @@ export default function GamePage() {
     const params = useParams();
     const router = useRouter();
     const { socket, username, playerId } = useGame();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
     const [room, setRoom] = useState<RoomState | null>(null);
     const [loading, setLoading] = useState(true);
+    const [inspectResult, setInspectResult] = useState<{targetId: string, isMafia: boolean} | null>(null);
+    const [investigationHistory, setInvestigationHistory] = useState<Map<string, boolean>>(new Map());
+    const [chatMessages, setChatMessages] = useState<Array<{id: string; sender: string; text: string; timestamp: number; isSystem?: boolean; isGhost?: boolean}>>([]);
 
     const code = params.code as string;
     const me = (room && playerId) ? room.players[playerId] : undefined;
 
     useEffect(() => {
+        if (authLoading) return;
+        
         if (!socket || !username) {
             router.push(`/username?next=/game/${code}`);
             return;
@@ -34,6 +43,11 @@ export default function GamePage() {
         socket.on('room:update', (updatedRoom: RoomState) => {
             setRoom(updatedRoom);
             setLoading(false);
+            
+            // If room reset to lobby, redirect there
+            if (updatedRoom.phase === 'lobby') {
+                router.push(`/lobby/${code}`);
+            }
         });
 
         // Listen for role assignment (private to this player)
@@ -66,6 +80,20 @@ export default function GamePage() {
             }
         });
 
+        // Listen for detective inspect result
+        socket.on('action:result', (data: { inspectResult?: {targetId: string, isMafia: boolean} }) => {
+            console.log('Action result received:', data);
+            if (data.inspectResult) {
+                setInspectResult(data.inspectResult);
+                // Add to investigation history
+                setInvestigationHistory(prev => {
+                    const newMap = new Map(prev);
+                    newMap.set(data.inspectResult!.targetId, data.inspectResult!.isMafia);
+                    return newMap;
+                });
+            }
+        });
+
         socket.on('room:error', (err: { reason: string }) => {
             console.error('Game error:', err);
             showToast(err.reason, 'error');
@@ -79,9 +107,10 @@ export default function GamePage() {
             socket.off('game:role');
             socket.off('game:phase');
             socket.off('game:end');
+            socket.off('action:result');
             socket.off('room:error');
         };
-    }, [socket, code, username, router, playerId, room]);
+    }, [socket, code, username, router, playerId, room, isAuthenticated, authLoading]);
 
     // Simple Render Logic based on Phase
     const renderPhase = () => {
@@ -91,11 +120,13 @@ export default function GamePage() {
             case 'role_reveal':
                 return <RoleRevealPhase role={me?.role} />;
             case 'day': // Discussion
-                return <DayPhase room={room} />;
+                return <DayPhase room={room} inspectResult={inspectResult} onClearInspect={() => setInspectResult(null)} investigationHistory={investigationHistory} chatMessages={chatMessages} setChatMessages={setChatMessages} />;
             case 'voting':
-                return <VotingPhase room={room} />;
+                return <VotingPhase room={room} chatMessages={chatMessages} setChatMessages={setChatMessages} />;
+            case 'elimination_result':
+                return <EliminationResultPhase room={room} />;
             case 'night':
-                return <NightPhase room={room} />;
+                return <NightPhase room={room} inspectResult={inspectResult} investigationHistory={investigationHistory} />;
             case 'game_end':
                 return <GameEndPhase room={room} />;
             case 'lobby':
@@ -133,13 +164,29 @@ export default function GamePage() {
     }
 
     return (
-        <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col overflow-hidden">
+        <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display min-h-screen flex flex-col overflow-hidden relative">
             <GameHeader 
                 roomCode={room.code} 
-                timeLeft={room.timer}
                 phase={room.phase}
             />
             <main className="flex-1 overflow-hidden relative">
+                {/* Timer in top-right corner of content area */}
+                {(room.timerEnd || room.timer !== undefined) && room.phase !== 'lobby' && room.phase !== 'game_end' && (
+                    <div className="absolute top-6 right-6 z-40 animate-fade-in">
+                        <Timer 
+                            timerEnd={room.timerEnd} 
+                            duration={
+                                room.phase === 'day' ? room.settings.discussionTime :
+                                room.phase === 'voting' ? room.settings.votingTime :
+                                room.phase === 'night' ? room.settings.nightTime :
+                                room.phase === 'elimination_result' ? room.settings.eliminationResultTime :
+                                room.phase === 'role_reveal' ? room.settings.roleRevealTime :
+                                undefined
+                            }
+                            label=""
+                        />
+                    </div>
+                )}
                  {renderPhase()}
             </main>
         </div>

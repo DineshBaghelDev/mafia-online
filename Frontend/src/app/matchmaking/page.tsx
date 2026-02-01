@@ -133,9 +133,9 @@ export default function MatchmakingPage() {
 
                     {/* Cancel Action */}
                     <div className="pt-8">
-                        <button 
+                        <button
                             onClick={handleCancel}
-                            className="group flex min-w-[160px] cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-xl h-14 px-8 border border-white/10 bg-white/5 hover:bg-primary/10 hover:border-primary/50 text-white/70 hover:text-white transition-all duration-300"
+                            className="group flex min-w-[160px] cursor-pointer items-center justify-center gap-3 rounded-xl h-14 px-8 border border-white/10 bg-white/5 hover:bg-primary/10 hover:border-primary/50 text-white/70 hover:text-white transition-all duration-300"
                         >
                             <span className="material-symbols-outlined group-hover:scale-110 transition-transform">close</span>
                             <span className="text-base font-bold tracking-wide">CANCEL</span>

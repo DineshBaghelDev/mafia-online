@@ -2,7 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { gameService } from '../services/gameService';
 import { matchmakingService } from '../services/matchmakingService';
 import { store } from '../services/store';
-import { RoomState } from '../types';
+import { RoomState, Player } from '../types';
 
 // Track user sessions
 const userSessions = new Map<string, string>(); // socketId -> userId
@@ -14,37 +14,9 @@ export const setupSockets = (io: Server) => {
     
     io.on('connection', (socket: Socket) => {
         console.log(`Socket connected: ${socket.id}`);
-
-        // ===== AUTHENTICATION & IDENTITY =====
         
-        socket.on('auth:identify', async (data: { username: string; userId?: string }) => {
-            try {
-                const userId = data.userId || socket.id;
-                userSessions.set(socket.id, userId);
-                
-                socket.emit('auth:success', { userId });
-                
-                // Check if user was in a room (reconnection)
-                const rooms = await store.getAllRooms();
-                for (const room of rooms) {
-                    if (room.players[userId]) {
-                        await gameService.reconnectPlayer(room.id, userId);
-                        socket.join(room.id);
-                        socketToRoom.set(socket.id, room.id);
-                        
-                        const updatedRoom = await store.getRoom(room.id);
-                        socket.emit('auth:reconnect', { 
-                            roomId: room.id, 
-                            gameState: updatedRoom 
-                        });
-                        io.to(room.id).emit('room:update', updatedRoom);
-                        break;
-                    }
-                }
-            } catch (error: any) {
-                socket.emit('room:error', { reason: error.message });
-            }
-        });
+        // Use socket.id as userId - no authentication required
+        userSessions.set(socket.id, socket.id);
 
         // ===== MATCHMAKING (PUBLIC GAMES) =====
         
@@ -172,10 +144,25 @@ export const setupSockets = (io: Server) => {
 
         socket.on('room:reset', async () => {
             try {
+                const userId = userSessions.get(socket.id) || socket.id;
                 const roomId = socketToRoom.get(socket.id);
                 if (!roomId) throw new Error('Not in a room');
                 
-                const room = await gameService.resetRoomToLobby(roomId);
+                const room = await gameService.resetRoomToLobby(roomId, userId);
+                io.to(roomId).emit('room:update', room);
+            } catch (error: any) {
+                socket.emit('room:error', { reason: error.message });
+            }
+        });
+
+        socket.on('game:wantsRematch', async () => {
+            try {
+                const userId = userSessions.get(socket.id) || socket.id;
+                const roomId = socketToRoom.get(socket.id);
+                
+                if (!roomId) throw new Error('Not in a room');
+                
+                const room = await gameService.setWantsRematch(roomId, userId);
                 io.to(roomId).emit('room:update', room);
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
@@ -208,11 +195,17 @@ export const setupSockets = (io: Server) => {
             }
         });
 
-        socket.on('room:settings', async (data: { 
-            maxPlayers?: number;
-            discussionTime?: number;
-            votingTime?: number;
-            nightTime?: number;
+        socket.on('room:updateSettings', async (data: { 
+            settings: {
+                maxPlayers?: number;
+                discussionTime?: number;
+                votingTime?: number;
+                nightTime?: number;
+                eliminationResultTime?: number;
+                roleRevealTime?: number;
+                enableDoctor?: boolean;
+                enableDetective?: boolean;
+            }
         }) => {
             try {
                 const userId = userSessions.get(socket.id) || socket.id;
@@ -220,7 +213,7 @@ export const setupSockets = (io: Server) => {
                 
                 if (!roomId) throw new Error('Not in a room');
                 
-                const room = await gameService.updateSettings(roomId, userId, data);
+                const room = await gameService.updateSettings(roomId, userId, data.settings);
                 io.to(roomId).emit('room:update', room);
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
@@ -279,25 +272,42 @@ export const setupSockets = (io: Server) => {
                 
                 if (!roomId) throw new Error('Not in a room');
                 
+                const room = await store.getRoom(roomId);
+                if (!room) throw new Error('Room not found');
+                
+                const player = room.players[userId];
+                if (!player || !player.isAlive) throw new Error('Dead players cannot act');
+                
                 await gameService.submitNightAction(roomId, userId, 'mafiaKill', data.targetId);
                 socket.emit('action:submitted', { action: 'mafiaKill' });
                 
                 // Notify other mafia members
-                const room = await store.getRoom(roomId);
-                if (room) {
-                    Object.entries(room.players).forEach(([playerId, player]) => {
-                        if (player.role === 'mafia' && playerId !== userId) {
-                            const mafiaSocket = Array.from(io.sockets.sockets.values())
-                                .find(s => userSessions.get(s.id) === playerId);
-                            if (mafiaSocket) {
-                                mafiaSocket.emit('action:mafia_choice', { 
-                                    targetId: data.targetId,
-                                    chosenBy: userId
-                                });
-                            }
+                Object.entries(room.players).forEach(([playerId, player]) => {
+                    if (player.role === 'mafia' && playerId !== userId) {
+                        const mafiaSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (mafiaSocket) {
+                            mafiaSocket.emit('action:mafia_choice', { 
+                                targetId: data.targetId,
+                                chosenBy: userId
+                            });
                         }
-                    });
-                }
+                    }
+                });
+                
+                // Notify ghosts (dead players)
+                Object.entries(room.players).forEach(([playerId, player]) => {
+                    if (!player.isAlive) {
+                        const ghostSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (ghostSocket) {
+                            ghostSocket.emit('ghost:mafiaKill', { 
+                                playerId: userId,
+                                targetId: data.targetId
+                            });
+                        }
+                    }
+                });
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
             }
@@ -310,8 +320,25 @@ export const setupSockets = (io: Server) => {
                 
                 if (!roomId) throw new Error('Not in a room');
                 
+                const room = await store.getRoom(roomId);
+                if (!room) throw new Error('Room not found');
+                
                 await gameService.submitNightAction(roomId, userId, 'doctorSave', data.targetId);
                 socket.emit('action:submitted', { action: 'doctorSave' });
+                
+                // Notify ghosts (dead players)
+                Object.entries(room.players).forEach(([playerId, player]) => {
+                    if (!player.isAlive) {
+                        const ghostSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (ghostSocket) {
+                            ghostSocket.emit('ghost:doctorSave', { 
+                                playerId: userId,
+                                targetId: data.targetId
+                            });
+                        }
+                    }
+                });
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
             }
@@ -324,8 +351,25 @@ export const setupSockets = (io: Server) => {
                 
                 if (!roomId) throw new Error('Not in a room');
                 
+                const room = await store.getRoom(roomId);
+                if (!room) throw new Error('Room not found');
+                
                 await gameService.submitNightAction(roomId, userId, 'detectiveInspect', data.targetId);
                 socket.emit('action:submitted', { action: 'detectiveInspect' });
+                
+                // Notify ghosts (dead players)
+                Object.entries(room.players).forEach(([playerId, player]) => {
+                    if (!player.isAlive) {
+                        const ghostSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (ghostSocket) {
+                            ghostSocket.emit('ghost:detectiveInspect', { 
+                                playerId: userId,
+                                targetId: data.targetId
+                            });
+                        }
+                    }
+                });
             } catch (error: any) {
                 socket.emit('room:error', { reason: error.message });
             }
@@ -406,7 +450,7 @@ export const setupSockets = (io: Server) => {
                 
                 if (!roomId) throw new Error('Not in a room');
                 
-                const room = await gameService.getRoom(roomId);
+                const room = await store.getRoom(roomId);
                 if (!room) throw new Error('Room not found');
                 
                 const sender = room.players[userId];
@@ -414,8 +458,8 @@ export const setupSockets = (io: Server) => {
                     throw new Error('Only Mafia can use this chat');
                 }
                 
-                // Broadcast to all mafia members
-                Object.entries(room.players).forEach(([playerId, player]) => {
+                // Broadcast to all mafia members (alive or dead)
+                Object.entries(room.players).forEach(([playerId, player]: [string, Player]) => {
                     if (player.role === 'mafia') {
                         const playerSocket = Array.from(io.sockets.sockets.values())
                             .find(s => userSessions.get(s.id) === playerId);
@@ -460,26 +504,49 @@ export const setupSockets = (io: Server) => {
             }
         });
 
+        socket.on('vote:skip', async () => {
+            try {
+                const userId = userSessions.get(socket.id) || socket.id;
+                const roomId = socketToRoom.get(socket.id);
+                
+                if (!roomId) throw new Error('Not in a room');
+                
+                const room = await gameService.castVote(roomId, userId, '__SKIP__');
+                
+                // Send vote update
+                const voteCounts: Record<string, number> = {};
+                Object.values(room.votes).forEach(targetId => {
+                    if (targetId !== '__SKIP__') {
+                        voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+                    }
+                });
+                
+                io.to(roomId).emit('vote:update', { 
+                    votes: room.votes,
+                    counts: voteCounts
+                });
+            } catch (error: any) {
+                socket.emit('room:error', { reason: error.message });
+            }
+        });
+
         // ===== DISCONNECT =====
         
         socket.on('disconnect', async () => {
             console.log(`Socket disconnected: ${socket.id}`);
             
             try {
-                const userId = userSessions.get(socket.id);
+                const userId = socket.id;
                 const roomId = socketToRoom.get(socket.id);
                 
-                if (userId && roomId) {
-                    const room = await gameService.disconnectPlayer(roomId, userId);
+                if (roomId) {
+                    const room = await gameService.removePlayer(roomId, userId);
                     if (room) {
                         io.to(roomId).emit('room:update', room);
                     }
                 }
                 
-                // Clean up session
-                if (userId) {
-                    await matchmakingService.removeFromQueue(userId);
-                }
+                await matchmakingService.removeFromQueue(userId);
                 userSessions.delete(socket.id);
                 socketToRoom.delete(socket.id);
             } catch (error) {

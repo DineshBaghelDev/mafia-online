@@ -1,6 +1,9 @@
+
 'use client';
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useAuth } from '@/context/AuthContext';
 import { showToast } from '@/components/ui/Toast';
 
 interface GameContextType {
@@ -14,124 +17,142 @@ interface GameContextType {
     leaveRoom: () => void;
 }
 
-const GameContext = createContext<GameContextType>(null!);
+const GameContext = createContext<GameContextType | undefined>(undefined);
 
-export function GameProvider({ children }: { children: React.ReactNode }) {
+function generateTestUsername() {
+    const suffix = Math.floor(1000 + Math.random() * 9000);
+    return `Player${suffix}`;
+}
+
+export function GameProvider({ children, mockPlayerId }: { children: React.ReactNode, mockPlayerId?: string }) {
+    const { user } = useAuth();
+
     const [socket, setSocket] = useState<Socket | null>(null);
-    const [username, setUsername] = useState("");
+    const [username, setUsername] = useState('');
     const [roomId, setRoomId] = useState<string | null>(null);
     const [playerId, setPlayerId] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
 
-    // Load username from localStorage on mount
+    // Initialize username - only use sessionStorage for per-tab sessions
     useEffect(() => {
-        const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            setUsername(storedUsername);
-        }
-    }, []);
+        if (typeof window === 'undefined') return;
 
-    // Save username to localStorage when it changes
-    useEffect(() => {
-        if (username) {
-            localStorage.setItem('username', username);
+        // Check sessionStorage first (per-tab) - this is the source of truth
+        let stored = sessionStorage.getItem('username');
+        
+        // If no session username and user is authenticated, use their auth username
+        if (!stored && user?.username) {
+            stored = user.username;
+            sessionStorage.setItem('username', stored);
         }
+        
+        if (stored) {
+            setUsername(stored);
+        }
+        // Don't fallback to localStorage - force fresh username entry per tab
+    }, [user?.username]);
+
+    // Persist username to sessionStorage only (per-tab)
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        if (!username) return;
+
+        sessionStorage.setItem('username', username);
     }, [username]);
 
+    // Socket lifecycle
     useEffect(() => {
+        // If mockPlayerId is provided, set it and skip socket initialization
+        if (mockPlayerId) {
+            setPlayerId(mockPlayerId);
+            setIsConnected(true);
+            return;
+        }
+
         const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
-        const s = io(socketUrl, { 
-            autoConnect: true,
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionAttempts: 5
-        });
+        const s = io(socketUrl, { autoConnect: true });
         setSocket(s);
-        
-        s.on('connect', () => {
-             console.log('Connected to server');
-             setIsConnected(true);
-             
-             // Identify user on connection
-             const storedUsername = localStorage.getItem('username');
-             const storedUserId = localStorage.getItem('userId');
-             if (storedUsername) {
-                 s.emit('auth:identify', { username: storedUsername, userId: storedUserId });
-             }
-        });
 
-        s.on('disconnect', () => {
-            console.log('Disconnected from server');
+        const onConnect = () => {
+            setIsConnected(true);
+            setPlayerId(s.id ?? null);
+        };
+
+        const onDisconnect = () => {
             setIsConnected(false);
-        });
+            setPlayerId(null);
+        };
 
-        s.on('auth:success', (data: { userId: string }) => {
-            console.log('Auth success:', data);
-            setPlayerId(data.userId);
-            localStorage.setItem('userId', data.userId);
-        });
-
-        s.on('auth:reconnect', (data: { roomId: string; gameState: any }) => {
-            console.log('Reconnected to room:', data);
+        const onRoomJoined = (data: { roomId: string; playerId?: string; code?: string }) => {
             setRoomId(data.roomId);
-        });
+            if (data.playerId) setPlayerId(data.playerId);
 
-        s.on('room:joined', (data: { roomId: string; roomCode: string; playerId: string }) => {
-            console.log('Room joined:', data);
-            setRoomId(data.roomId);
-            setPlayerId(data.playerId);
-            localStorage.setItem('currentRoomId', data.roomId);
-            localStorage.setItem('currentRoomCode', data.roomCode);
-        });
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('currentRoomId', data.roomId);
+                if (data.code) localStorage.setItem('currentRoomCode', data.code);
+            }
+        };
 
-        s.on('room:error', (data: { reason: string }) => {
-            console.error('Room error:', data.reason);
+        const onRoomError = (data: { reason: string }) => {
             showToast(data.reason, 'error');
-        });
+        };
 
-        s.on('room:kicked', () => {
-            console.log('You were kicked from the room');
+        const onRoomKicked = () => {
             setRoomId(null);
-            localStorage.removeItem('currentRoomId');
-            localStorage.removeItem('currentRoomCode');
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('currentRoomId');
+                localStorage.removeItem('currentRoomCode');
+            }
             showToast('You were kicked from the room', 'warning');
-        });
+        };
 
-        s.on('room:closed', () => {
-            console.log('Room was closed');
+        const onRoomClosed = () => {
             setRoomId(null);
-            localStorage.removeItem('currentRoomId');
-            localStorage.removeItem('currentRoomCode');
-        });
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('currentRoomId');
+                localStorage.removeItem('currentRoomCode');
+            }
+            showToast('Room was closed', 'warning');
+        };
+
+        s.on('connect', onConnect);
+        s.on('disconnect', onDisconnect);
+        s.on('room:joined', onRoomJoined);
+        s.on('room:error', onRoomError);
+        s.on('room:kicked', onRoomKicked);
+        s.on('room:closed', onRoomClosed);
 
         return () => {
+            s.off('connect', onConnect);
+            s.off('disconnect', onDisconnect);
+            s.off('room:joined', onRoomJoined);
+            s.off('room:error', onRoomError);
+            s.off('room:kicked', onRoomKicked);
+            s.off('room:closed', onRoomClosed);
             s.disconnect();
-        }
-    }, []);
+        };
+    }, [mockPlayerId]);
 
     const leaveRoom = useCallback(() => {
-        if (socket && roomId) {
-            socket.emit('room:leave', { roomId });
+        if (socket) {
+            socket.emit('room:leave');
         }
         setRoomId(null);
-        localStorage.removeItem('currentRoomId');
-        localStorage.removeItem('currentRoomCode');
-    }, [socket, roomId]);
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('currentRoomId');
+            localStorage.removeItem('currentRoomCode');
+        }
+    }, [socket]);
 
     return (
-        <GameContext.Provider value={{ 
-            socket, 
-            username, 
-            setUsername, 
-            roomId, 
-            playerId, 
-            isConnected,
-            setRoomId,
-            leaveRoom 
-        }}>
+        <GameContext.Provider value={{ socket, username, setUsername, roomId, playerId, isConnected, setRoomId, leaveRoom }}>
             {children}
         </GameContext.Provider>
     );
 }
 
-export const useGame = () => useContext(GameContext);
+export function useGame() {
+    const ctx = useContext(GameContext);
+    if (!ctx) throw new Error('useGame must be used within a GameProvider');
+    return ctx;
+}

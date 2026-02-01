@@ -19,6 +19,10 @@ export class GameService {
             discussionTime?: number;
             votingTime?: number;
             nightTime?: number;
+            eliminationResultTime?: number;
+            roleRevealTime?: number;
+            enableDoctor?: boolean;
+            enableDetective?: boolean;
         }
     ): Promise<RoomState> {
         const roomId = uuidv4();
@@ -43,6 +47,10 @@ export class GameService {
                 discussionTime: customSettings?.discussionTime || 90,
                 votingTime: customSettings?.votingTime || 30,
                 nightTime: customSettings?.nightTime || 30,
+                eliminationResultTime: customSettings?.eliminationResultTime || 5,
+                roleRevealTime: customSettings?.roleRevealTime || 8,
+                enableDoctor: customSettings?.enableDoctor ?? true,
+                enableDetective: customSettings?.enableDetective ?? true,
                 isPublic
             },
             isPublic,
@@ -83,25 +91,49 @@ export class GameService {
         return room;
     }
 
-    async resetRoomToLobby(roomId: string): Promise<RoomState> {
+    async resetRoomToLobby(roomId: string, userId?: string): Promise<RoomState> {
         const room = await store.getRoom(roomId);
         if (!room) throw new Error("Room not found");
+        
+        // Store original phase before resetting
+        const wasGameEnd = room.phase === 'game_end';
+        
+        // If userId provided, check if they're the host (only from game_end phase)
+        if (userId && wasGameEnd) {
+            const player = room.players[userId];
+            if (!player?.isHost) throw new Error("Only host can restart the game");
+            
+            // Auto-opt the host into rematch when they restart
+            player.wantsRematch = true;
+        }
 
+        // Only keep players who want rematch (if coming from game_end)
+        if (wasGameEnd && userId) {
+            // Remove players who didn't opt for rematch
+            Object.keys(room.players).forEach(playerId => {
+                if (!room.players[playerId].wantsRematch) {
+                    delete room.players[playerId];
+                }
+            });
+        }
+        
         // Reset room state
         room.phase = 'lobby';
         room.currentRound = 0;
         room.votes = {};
-        room.actions = {};
+        room.actions = { mafiaVotes: {} };
         room.chatHistory = [];
         room.nightResult = undefined;
         room.eliminatedThisRound = undefined;
         room.winner = undefined;
         room.timerEnd = undefined;
-
-        // Reset all players
+        
+        // Reset remaining players (preserve isHost flag)
         Object.values(room.players).forEach(player => {
             player.isAlive = true;
             player.ready = false;
+            player.wantsRematch = false;
+            // Don't reset isHost - preserve host status
             delete player.role;
         });
 
@@ -112,6 +144,19 @@ export class GameService {
             this.timers.delete(roomId);
         }
 
+        await store.updateRoom(roomId, room);
+        return room;
+    }
+
+    async setWantsRematch(roomId: string, userId: string): Promise<RoomState> {
+        const room = await store.getRoom(roomId);
+        if (!room) throw new Error("Room not found");
+        if (room.phase !== 'game_end') throw new Error("Game not ended");
+        
+        const player = room.players[userId];
+        if (!player) throw new Error("Player not in room");
+        
+        player.wantsRematch = true;
         await store.updateRoom(roomId, room);
         return room;
     }
@@ -147,6 +192,12 @@ export class GameService {
         if (room.phase !== 'lobby') throw new Error("Cannot change settings after game start");
         
         Object.assign(room.settings, settings);
+        
+        // Sync top-level isPublic with settings.isPublic
+        if (settings.isPublic !== undefined) {
+            room.isPublic = settings.isPublic;
+        }
+        
         await store.updateRoom(room.id, room);
         return room;
     }
@@ -169,8 +220,8 @@ export class GameService {
         
         await store.updateRoom(roomId, room);
         
-        // Auto-transition to night after 8 seconds
-        this.schedulePhaseTransition(roomId, 8000, async () => {
+        // Auto-transition to night after configured role reveal time
+        this.schedulePhaseTransition(roomId, room.settings.roleRevealTime * 1000, async () => {
             await this.transitionToNight(roomId);
         });
         
@@ -193,9 +244,9 @@ export class GameService {
             roles.push('mafia');
         }
         
-        // Add special roles
-        if (playerCount >= 5) roles.push('doctor');
-        if (playerCount >= 5) roles.push('detective');
+        // Add special roles (if enabled)
+        if (playerCount >= 5 && room.settings.enableDoctor) roles.push('doctor');
+        if (playerCount >= 5 && room.settings.enableDetective) roles.push('detective');
         
         // Fill rest with villagers
         while (roles.length < playerCount) {
@@ -227,7 +278,7 @@ export class GameService {
         if (!room) throw new Error("Room not found");
         
         room.phase = 'night';
-        room.actions = {}; // Reset actions
+        room.actions = { mafiaVotes: {} }; // Reset actions with empty mafiaVotes
         room.nightResult = undefined;
         room.timerEnd = Date.now() + (room.settings.nightTime * 1000);
         
@@ -250,7 +301,8 @@ export class GameService {
         if (!player || !player.isAlive) throw new Error("Invalid player");
         
         const target = room.players[targetId];
-        if (!target || !target.isAlive) throw new Error("Invalid target");
+        if (!target) throw new Error("Target player not found");
+        if (!target.isAlive) throw new Error("Cannot target dead players");
         
         // Validate role-based actions
         if (action === 'mafiaKill' && player.role !== 'mafia') {
@@ -263,7 +315,13 @@ export class GameService {
             throw new Error("Only detective can inspect");
         }
         
-        room.actions[action] = targetId;
+        // For mafia, track individual votes
+        if (action === 'mafiaKill') {
+            if (!room.actions.mafiaVotes) room.actions.mafiaVotes = {};
+            room.actions.mafiaVotes[userId] = targetId;
+        } else {
+            room.actions[action] = targetId;
+        }
         await store.updateRoom(roomId, room);
     }
 
@@ -271,9 +329,27 @@ export class GameService {
         const room = await store.getRoom(roomId);
         if (!room) throw new Error("Room not found");
         
-        const { mafiaKill, doctorSave, detectiveInspect } = room.actions;
+        const { mafiaVotes, doctorSave, detectiveInspect } = room.actions;
         
         room.nightResult = {};
+        
+        // Count mafia votes for kill target
+        let mafiaKill: string | undefined;
+        if (mafiaVotes && Object.keys(mafiaVotes).length > 0) {
+            const voteCounts: Record<string, number> = {};
+            Object.values(mafiaVotes).forEach(targetId => {
+                voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+            });
+            
+            const maxVotes = Math.max(...Object.values(voteCounts));
+            const topTargets = Object.keys(voteCounts).filter(id => voteCounts[id] === maxVotes);
+            
+            // Only kill if there's a clear winner (no tie)
+            if (topTargets.length === 1) {
+                mafiaKill = topTargets[0];
+            }
+            // On tie, no one is killed
+        }
         
         // Resolve kill/save
         if (mafiaKill) {
@@ -347,8 +423,11 @@ export class GameService {
         const voter = room.players[voterId];
         if (!voter || !voter.isAlive) throw new Error("Cannot vote");
         
-        const target = room.players[targetId];
-        if (!target || !target.isAlive) throw new Error("Invalid target");
+        // Allow __SKIP__ as a special target for skipping
+        if (targetId !== '__SKIP__') {
+            const target = room.players[targetId];
+            if (!target || !target.isAlive) throw new Error("Invalid target");
+        }
         
         room.votes[voterId] = targetId;
         await store.updateRoom(roomId, room);
@@ -362,7 +441,10 @@ export class GameService {
         // Count votes
         const voteCounts: Record<string, number> = {};
         Object.values(room.votes).forEach(targetId => {
-            voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+            // Skip special skip votes
+            if (targetId !== '__SKIP__') {
+                voteCounts[targetId] = (voteCounts[targetId] || 0) + 1;
+            }
         });
         
         // Find player(s) with most votes
@@ -378,7 +460,7 @@ export class GameService {
             }
         });
         
-        // Handle elimination (random if tie, or no elimination if no votes)
+        // Handle elimination (no elimination if tie or no votes)
         if (eliminated.length === 1 && maxVotes > 0) {
             const target = room.players[eliminated[0]];
             if (target) {
@@ -386,13 +468,8 @@ export class GameService {
                 room.eliminatedThisRound = eliminated[0];
             }
         } else if (eliminated.length > 1) {
-            // Tie - random elimination
-            const randomIndex = Math.floor(Math.random() * eliminated.length);
-            const target = room.players[eliminated[randomIndex]];
-            if (target) {
-                target.isAlive = false;
-                room.eliminatedThisRound = eliminated[randomIndex];
-            }
+            // Tie - no elimination
+            room.eliminatedThisRound = undefined;
         } else {
             room.eliminatedThisRound = undefined; // No elimination
         }
@@ -404,9 +481,16 @@ export class GameService {
             return room;
         }
         
-        // Next round
-        room.currentRound++;
-        await this.transitionToNight(roomId);
+        // Transition to elimination result screen
+        room.phase = 'elimination_result';
+        room.timerEnd = Date.now() + (room.settings.eliminationResultTime * 1000);
+        await store.updateRoom(roomId, room);
+        
+        // Auto-transition to night after elimination result time
+        this.schedulePhaseTransition(roomId, room.settings.eliminationResultTime * 1000, async () => {
+            room.currentRound++;
+            await this.transitionToNight(roomId);
+        });
         
         return room;
     }
@@ -444,10 +528,7 @@ export class GameService {
             throw new Error("No public chat during night");
         }
         
-        // Dead players can't chat (optional rule)
-        if (!sender.isAlive && room.phase !== 'game_end') {
-            throw new Error("Dead players cannot chat");
-        }
+        // Ghost chat is allowed - dead players can chat with each other
         
         const chatMessage: ChatMessage = {
             id: uuidv4(),

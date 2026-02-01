@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGame } from '@/context/GameContext';
 import { RoomState } from '@/types';
 
 interface GameEndPhaseProps {
@@ -10,8 +11,52 @@ interface GameEndPhaseProps {
 
 export function GameEndPhase({ room }: GameEndPhaseProps) {
     const router = useRouter();
+    const { socket, playerId } = useGame();
+    const [hasOptedIn, setHasOptedIn] = useState(false);
     const winner = room.winner || 'villagers';
     const isMafiaWin = winner === 'mafia';
+    const me = playerId ? room.players[playerId] : null;
+    const isHost = me?.isHost || false;
+    const myWantsRematch = me?.wantsRematch || false;
+
+    const handlePlayAgain = () => {
+        if (!socket) return;
+        
+        if (isHost) {
+            // Host resets the room - only brings back players who opted in
+            socket.emit('room:reset');
+        } else {
+            // Non-host opts in for rematch
+            socket.emit('game:wantsRematch');
+            setHasOptedIn(true);
+        }
+    };
+
+    // Count how many players want rematch
+    const rematchCount = Object.values(room.players).filter(p => p.wantsRematch).length;
+    const totalPlayers = Object.values(room.players).length;
+
+    if (hasOptedIn || (myWantsRematch && !isHost)) {
+        return (
+            <div className="relative flex flex-col items-center justify-center flex-grow w-full max-w-5xl mx-auto px-4 py-8 h-full">
+                <div className="relative z-10 flex flex-col items-center text-center space-y-6 animate-fade-in">
+                    <div className="w-24 h-24 rounded-full bg-primary/10 border-2 border-primary/30 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-primary text-5xl animate-pulse">hourglass_empty</span>
+                    </div>
+                    <div>
+                        <h2 className="text-3xl font-black text-white mb-2">Waiting for Host</h2>
+                        <p className="text-white/60 text-lg">The host will start a new game soon...</p>
+                    </div>
+                    <button
+                        onClick={() => router.push('/')}
+                        className="mt-8 px-6 py-3 rounded-xl border border-white/10 hover:bg-white/10 text-white font-bold transition-all"
+                    >
+                        LEAVE GAME
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative flex flex-col items-center justify-center flex-grow w-full max-w-5xl mx-auto px-4 py-8 h-full overflow-hidden">
@@ -96,11 +141,11 @@ export function GameEndPhase({ room }: GameEndPhaseProps) {
                 {/* Action Buttons */}
                 <div className="w-full max-w-lg space-y-3">
                     <button 
-                        onClick={() => router.push(`/lobby/${room.code}`)}
+                        onClick={handlePlayAgain}
                         className="w-full h-14 rounded-xl bg-primary hover:bg-[#ff4d5a] text-white font-bold text-lg tracking-wide transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-outlined">refresh</span>
-                        PLAY AGAIN
+                        {isHost ? 'RESTART GAME' : 'PLAY AGAIN'}
                     </button>
                     <button 
                         onClick={() => router.push('/')}

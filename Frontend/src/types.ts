@@ -1,5 +1,5 @@
 export type Role = 'mafia' | 'detective' | 'doctor' | 'villager';
-export type Phase = 'lobby' | 'role_reveal' | 'night' | 'day' | 'voting' | 'game_end';
+export type Phase = 'lobby' | 'role_reveal' | 'night' | 'day' | 'voting' | 'elimination_result' | 'game_end';
 export type Winner = 'mafia' | 'villagers';
 
 export interface Player {
@@ -10,6 +10,7 @@ export interface Player {
     isAlive: boolean;
     connected: boolean;
     ready?: boolean;
+    wantsRematch?: boolean;
 }
 
 export interface RoomSettings {
@@ -17,11 +18,16 @@ export interface RoomSettings {
     discussionTime: number;
     votingTime: number;
     nightTime: number;
+    eliminationResultTime: number;
+    roleRevealTime: number;
+    enableDoctor: boolean;
+    enableDetective: boolean;
     isPublic: boolean;
 }
 
 export interface GameActions {
     mafiaKill?: string;
+    mafiaVotes?: Record<string, string>;
     doctorSave?: string;
     detectiveInspect?: string;
 }

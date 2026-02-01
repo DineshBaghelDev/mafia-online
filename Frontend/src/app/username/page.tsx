@@ -8,17 +8,13 @@ function UsernameForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { username, setUsername } = useGame();
-    const [localUsername, setLocalUsername] = useState(username || '');
+    const [localUsername, setLocalUsername] = useState('');
     const [error, setError] = useState('');
     
     const nextPage = searchParams.get('next') || '/';
 
-    useEffect(() => {
-        // If username already set, redirect to next page
-        if (username) {
-            router.push(nextPage);
-        }
-    }, [username, nextPage, router]);
+    // Don't auto-redirect - always show the username form
+    // This ensures users can see and modify their name for each tab/session
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

@@ -33,24 +33,55 @@ export function Timer({ timerEnd, duration, label = 'Time Left' }: TimerProps) {
     
     // Color changes as time runs out
     const getColor = () => {
-        if (percentage > 60) return 'bg-green-500';
-        if (percentage > 30) return 'bg-yellow-500';
-        return 'bg-red-500';
+        if (percentage > 60) return '#10b981'; // green
+        if (percentage > 30) return '#eab308'; // yellow
+        return '#ef4444'; // red
     };
     
+    const strokeColor = getColor();
+    const radius = 36;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    
     return (
-        <div className="w-full max-w-md mx-auto">
-            <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-bold text-white/60 uppercase tracking-wider">{label}</span>
-                <span className="text-2xl font-mono font-bold text-white">
+        <div className="relative w-20 h-20 p-2">
+            <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                {/* Background circle */}
+                <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.1)"
+                    strokeWidth="6"
+                />
+                {/* Progress circle */}
+                <circle
+                    cx="50"
+                    cy="50"
+                    r={radius}
+                    fill="none"
+                    stroke={strokeColor}
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                    className="transition-all duration-1000 ease-linear"
+                    style={{
+                        filter: `drop-shadow(0 0 6px ${strokeColor})`
+                    }}
+                />
+            </svg>
+            {/* Time display in center */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-lg font-mono font-black text-white">
                     {minutes}:{seconds.toString().padStart(2, '0')}
                 </span>
-            </div>
-            <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                <div 
-                    className={`h-full ${getColor()} transition-all duration-1000 ease-linear`}
-                    style={{ width: `${percentage}%` }}
-                />
+                {label && (
+                    <span className="text-[7px] font-bold text-white/40 uppercase tracking-wider mt-0.5">
+                        {label}
+                    </span>
+                )}
             </div>
         </div>
     );
