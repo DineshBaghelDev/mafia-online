@@ -5,6 +5,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/context/AuthContext';
 import { showToast } from '@/components/ui/Toast';
+import { BackendConnectionStatus } from '@/components/BackendConnectionStatus';
 
 interface GameContextType {
     socket: Socket | null;
@@ -146,6 +147,7 @@ export function GameProvider({ children, mockPlayerId }: { children: React.React
 
     return (
         <GameContext.Provider value={{ socket, username, setUsername, roomId, playerId, isConnected, setRoomId, leaveRoom }}>
+            <BackendConnectionStatus isConnected={isConnected} />
             {children}
         </GameContext.Provider>
     );
