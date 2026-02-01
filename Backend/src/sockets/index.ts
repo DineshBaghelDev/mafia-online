@@ -458,18 +458,31 @@ export const setupSockets = (io: Server) => {
                     throw new Error('Only Mafia can use this chat');
                 }
                 
+                const messagePayload = {
+                    senderId: userId,
+                    senderName: sender.username,
+                    message: data.message,
+                    timestamp: Date.now()
+                };
+                
                 // Broadcast to all mafia members (alive or dead)
                 Object.entries(room.players).forEach(([playerId, player]: [string, Player]) => {
                     if (player.role === 'mafia') {
                         const playerSocket = Array.from(io.sockets.sockets.values())
                             .find(s => userSessions.get(s.id) === playerId);
                         if (playerSocket) {
-                            playerSocket.emit('mafia:message', {
-                                senderId: userId,
-                                senderName: sender.username,
-                                message: data.message,
-                                timestamp: Date.now()
-                            });
+                            playerSocket.emit('mafia:message', messagePayload);
+                        }
+                    }
+                });
+                
+                // Also broadcast to all dead players (ghosts) so they can spectate
+                Object.entries(room.players).forEach(([playerId, player]: [string, Player]) => {
+                    if (!player.isAlive && player.role !== 'mafia') {
+                        const ghostSocket = Array.from(io.sockets.sockets.values())
+                            .find(s => userSessions.get(s.id) === playerId);
+                        if (ghostSocket) {
+                            ghostSocket.emit('ghost:mafiaChat', messagePayload);
                         }
                     }
                 });
